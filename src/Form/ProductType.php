@@ -61,7 +61,7 @@ class ProductType extends AbstractType {
 	}
 
 	public function getBlockPrefix() {
-		return 'element_type';
+		return 'product_type';
 	}
 
 }

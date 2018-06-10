@@ -20,6 +20,12 @@
     <![endif]-->
 </head>
 <body>
+
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+
+    </div>
+</nav>
 {% include 'default/_flash_messages.html.twig' %}
     <!--<header class="header">
         <button class="btn btn-outline-info my-2 my-sm-0" >Sign Out</button>
@@ -27,6 +33,7 @@
     <div class="main-content">
         <aside class="aside bg-info">
             <h1 class="card-title text-light m-lg-2">ShopLista</h1>
+
             {% if lists is defined and lists|length %}
                 <ul class="list-group list-margin" >
                     {% for list in lists %}
@@ -34,9 +41,24 @@
                     {% endfor %}
                 </ul>
             {% endif %}
+
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
             <ul class="list-group list-margin">
                 <a href="{{ url('lists_manager') }}" title="{{ 'title.manage_lists'|trans }}" class="text-light"><li class="list-group-item bg-info">{{ 'title.manage_lists'|trans }}</li></a>
                 <a href="{{ url('list_add') }}" title="{{ 'title.add_list'|trans }}" class="text-light"><li class="list-group-item bg-info">{{ 'title.add_list'|trans }}</li></a>
+            </ul>
+            {% endif %}
+
+            <ul class="list-group list-margin">
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <a href="{{ url('auth_logout') }}" title="{{ 'auth.logout.label'|trans }}" class="text-light">
+                        <li class="list-group-item bg-info">{{ 'auth.logout.label'|trans }}</li>
+                    </a>
+                {% else %}
+                    <a href="{{ url('auth_login') }}" title="{{ 'auth.login.label'|trans }}" class="text-light">
+                        <li class="list-group-item bg-info">{{ 'auth.login.label'|trans }}</li>
+                    </a>
+                {% endif %}
             </ul>
         </aside>
         <main class="lists-content">

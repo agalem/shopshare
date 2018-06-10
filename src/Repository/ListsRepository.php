@@ -14,8 +14,11 @@ class ListsRepository {
 		$this->productsRepository = new ProductsRepository($db);
 	}
 
-	public function findAll() {
+	public function findAll($username) {
 		$queryBuilder = $this->queryAll();
+		$queryBuilder->where('l.createdBy = :username')
+		             ->setParameter(':username', $username, \PDO::PARAM_STR);
+
 
 		return $queryBuilder->execute()->fetchAll();
 	}
@@ -28,6 +31,39 @@ class ListsRepository {
 
 
 		return $result;
+	}
+
+	public function findLinkedLists($username) {
+		$userId = $this->db->createQueryBuilder();
+		$userId->select('u.id', 'u.login')
+		       ->from('users', 'u')
+		       ->where('u.login = :username')
+		       ->setParameter(':username', $username, \PDO::PARAM_STR);
+
+		$userId = $userId->execute()->fetch();
+
+		$linkedLists = $this->db->createQueryBuilder();
+		$linkedLists->select('lu.id_list', 'lu.id_user')
+		               ->from('lists_users', 'lu')
+		               ->where('lu.id_user = :userId')
+		               ->setParameter(':userId', $userId['id'], \PDO::PARAM_INT);
+
+		$linkedListsIds = array_column($linkedLists->execute()->fetchAll(), 'id_list');
+
+
+		$queryBuilder = $this->queryAll();
+		$queryBuilder->where('l.id IN (:ids)')
+		             ->setParameter(':ids', $linkedListsIds, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+		$result =  $queryBuilder->execute()->fetchAll();
+
+
+		if (!$result) {
+			return [];
+		} else {
+			return $result;
+		}
+
+
 	}
 
 	public function save($list) {
@@ -118,7 +154,7 @@ class ListsRepository {
 	protected function queryAll() {
 		$queryBuilder = $this->db->createQueryBuilder();
 
-		return $queryBuilder->select('l.id', 'l.name', 'l.maxCost')
+		return $queryBuilder->select('l.id', 'l.name', 'l.maxCost', 'l.createdBy')
 			->from('lists', 'l');
 	}
 

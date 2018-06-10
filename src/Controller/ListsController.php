@@ -47,12 +47,30 @@ class ListsController implements ControllerProviderInterface {
 		return $controller;
 	}
 
+	public function getUser(Application $app) {
+		$token = $app['security.token_storage']->getToken();
+
+		if(null !== $token) {
+			$user = $token->getUsername();
+		}
+
+		return $user;
+	}
+
 	public function indexAction(Application $app) {
 		$listsRepository = new ListsRepository($app['db']);
 
+		$user = $this->getUser($app);
+
+
+
 		return $app['twig']->render(
 			'lists/index.html.twig',
-			['lists' => $listsRepository->findAll()]
+			[
+				'lists' => $listsRepository->findAll($user),
+				'name' => $user,
+				'linkedLists' => $listsRepository->findLinkedLists($user)
+			]
 		);
 	}
 
@@ -60,7 +78,9 @@ class ListsController implements ControllerProviderInterface {
 		$listsRepository = new ListsRepository($app['db']);
 		$list = $listsRepository->findOneById($id);
 
-		if(!$list) {
+		$user = $this->getUser($app);
+
+		if(!$list or $list['createdBy'] != $user) {
 			$app['session']->getFlashBag()->add(
 				'messages',
 				[
@@ -70,6 +90,7 @@ class ListsController implements ControllerProviderInterface {
 			);
 
 			return $app->redirect($app['url_generator']->generate('lists_index'));
+
 		}
 
 		$currentSpendigs = $listsRepository->getCurrentSpendings($id);
@@ -90,11 +111,14 @@ class ListsController implements ControllerProviderInterface {
 			$progressBarClass = 'bg-danger text-light';
 		}
 
+		$user = $this->getUser($app);
+
+
 		return $app['twig']->render(
 			'lists/view.html.twig',
 			[
 				'currentSpendings' => $listsRepository->getCurrentSpendings($id),
-				'lists' => $listsRepository->findAll(),
+				'lists' => $listsRepository->findAll($user),
 				'activeList' => $listsRepository->findOneById($id),
 				'products' => $listsRepository->findLinkedProducts($id),
 				'plannedSpendings' => $plannedSpendings,
@@ -107,10 +131,12 @@ class ListsController implements ControllerProviderInterface {
 	public function managerAction(Application $app) {
 		$listRepository = new ListsRepository($app['db']);
 
+		$user = $this->getUser($app);
+
 		return $app['twig']->render(
 			'lists/manager.html.twig',
 			[
-				'lists' => $listRepository->findAll(),
+				'lists' => $listRepository->findAll($user),
 			]
 		);
 	}
@@ -123,8 +149,13 @@ class ListsController implements ControllerProviderInterface {
 		$form = $app['form.factory']->createBuilder(ListType::class, $list)->getForm();
 		$form->handleRequest($request);
 
+		$user = $this->getUser($app);
+
 		if($form->isSubmitted() && $form->isValid()) {
-			$listsRepository->save($form->getData());
+			$newList = $form->getData();
+			$newList['createdBy'] = $user;
+
+			$listsRepository->save($newList);
 
 			$app['session']->getFlashBag()->add(
 				'messages',
@@ -137,12 +168,13 @@ class ListsController implements ControllerProviderInterface {
 			return $app->redirect($app['url_generator']->generate('lists_manager'), 301);
 		}
 
+
 		return $app['twig']->render(
 			'lists/add.html.twig',
 			[
 				'newList' => $list,
 				'form' => $form->createView(),
-				'lists' => $listsRepository->findAll(),
+				'lists' => $listsRepository->findAll($user),
 			]
 		);
 	}
@@ -150,7 +182,10 @@ class ListsController implements ControllerProviderInterface {
 	public function editAction(Application $app, $id, Request $request) {
 		$listsRepository = new ListsRepository($app['db']);
 		$list = $listsRepository->findOneById($id);
-		if(!$list) {
+
+		$user = $this->getUser($app);
+
+		if(!$list || $list['createdBy'] != $user) {
 			$app['session']->getFlashBag()->add(
 				'messages',
 				[
@@ -163,7 +198,9 @@ class ListsController implements ControllerProviderInterface {
 		$form = $app['form.factory']->createBuilder(ListType::class, $list)->getForm();
 		$form->handleRequest($request);
 		if($form->isSubmitted() && $form->isValid()){
-			$listsRepository->save($form->getData());
+			$newList = $form->getData();
+			$newList['lastModifiedBy'] = $user;
+			$listsRepository->save($newList);
 			$app['session']->getFlashBag()->add(
 				'messages',
 				[
@@ -178,7 +215,7 @@ class ListsController implements ControllerProviderInterface {
 			[
 				'editedList' => $list,
 				'form' => $form->createView(),
-				'lists' => $listsRepository->findAll(),
+				'lists' => $listsRepository->findAll($user),
 				'products' => $listsRepository->findLinkedProducts($id),
 			]
 		);
@@ -189,7 +226,9 @@ class ListsController implements ControllerProviderInterface {
 		$listsRepository = new ListsRepository($app['db']);
 		$list = $listsRepository->findOneById($id);
 
-		if(!$list) {
+		$user = $this->getUser($app);
+
+		if(!$list || $list['createdBy'] != $user) {
 			$app['session']->getFlashBag()->add(
 				'messages',
 				[
@@ -226,7 +265,7 @@ class ListsController implements ControllerProviderInterface {
 			[
 				'deletedList' => $list,
 				'form' => $form->createView(),
-				'lists' => $listsRepository->findAll(),
+				'lists' => $listsRepository->findAll($user),
 			]
 		);
 	}
@@ -238,7 +277,9 @@ class ListsController implements ControllerProviderInterface {
 		$list = $listsRepository->findOneById($id);
 		$product = [];
 
-		if(!$list) {
+		$user = $this->getUser($app);
+
+		if(!$list || $list['createdBy'] != $user) {
 			$app['session']->getFlashBag()->add(
 				'messages',
 				[
@@ -274,7 +315,7 @@ class ListsController implements ControllerProviderInterface {
 			[
 				'newProduct' => $product,
 				'form' => $form->createView(),
-				'lists' => $listsRepository->findAll(),
+				'lists' => $listsRepository->findAll($user),
 				'editedList' => $listsRepository->findOneById($id),
 			]
 		);

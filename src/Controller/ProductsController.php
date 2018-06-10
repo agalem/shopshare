@@ -41,6 +41,16 @@ class ProductsController implements ControllerProviderInterface {
 		return $controller;
 	}
 
+	public function getUser(Application $app) {
+		$token = $app['security.token_storage']->getToken();
+
+		if(null !== $token) {
+			$user = $token->getUsername();
+		}
+
+		return $user;
+	}
+
 	public function editAction(Application $app, $id, Request $request) {
 
 		$productsRepository = new ProductsRepository($app['db']);
@@ -48,6 +58,8 @@ class ProductsController implements ControllerProviderInterface {
 		$product = $productsRepository->findOneById($id);
 		$connectedList = $listsRepository->getConnectedList($id);
 		$listId = $connectedList['list_id'];
+
+		$user = $this->getUser($app);
 
 		if(!$product) {
 			$app['session']->getFlashBag()->add(
@@ -83,7 +95,7 @@ class ProductsController implements ControllerProviderInterface {
 			[
 				'editedProduct' => $product,
 				'form' => $form->createView(),
-				'lists' => $listsRepository->findAll(),
+				'lists' => $listsRepository->findAll($user),
 			]
 		);
 	}
@@ -95,6 +107,8 @@ class ProductsController implements ControllerProviderInterface {
 		$product = $productsRepository->findOneById($id);
 		$connectedList = $listsRepository->getConnectedList($id);
 		$listId = $connectedList['list_id'];
+
+		$user = $this->getUser($app);
 
 		if(!$product) {
 			$app['session']->getFlashBag()->add(
@@ -130,7 +144,7 @@ class ProductsController implements ControllerProviderInterface {
 			[
 				'editedProduct' => $product,
 				'form' => $form->createView(),
-				'lists' => $listsRepository->findAll(),
+				'lists' => $listsRepository->findAll($user),
 				'previousList' => $listId,
 			]
 		);
@@ -143,6 +157,8 @@ class ProductsController implements ControllerProviderInterface {
 		$listsRepository = new ListsRepository($app['db']);
 		$connectedList = $listsRepository->getConnectedList($id);
 		$listId = $connectedList['list_id'];
+
+		$user = $this->getUser($app);
 
 		if(!$product) {
 			$app['session']->getFlashBag()->add(
@@ -178,7 +194,7 @@ class ProductsController implements ControllerProviderInterface {
 			[
 				'deletedProduct' => $product,
 				'form' => $form->createView(),
-				'lists' => $listsRepository->findAll(),
+				'lists' => $listsRepository->findAll($user),
 			]
 		);
 	}

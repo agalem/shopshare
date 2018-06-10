@@ -158,6 +158,10 @@
                 <source>auth.create.label</source>
                 <target>Create an account</target>
             </trans-unit>
+            <trans-unit id="title.hello">
+                <source>title.hello</source>
+                <target>Welcome</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

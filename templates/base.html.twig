@@ -41,6 +41,13 @@
                     {% endfor %}
                 </ul>
             {% endif %}
+            {% if linkedLists is defined and linkedLists|length %}
+                <ul class="list-group list-margin" >
+                    {% for linkedList in linkedLists %}
+                        <a href="{{ url('lists_view', {'id': linkedList.id}) }}" title="{{ linkedList.name }}" class="text-light"><li class="list-group-item bg-info">{{ linkedList.name }}</li></a>
+                    {% endfor %}
+                </ul>
+            {% endif %}
 
             {% if is_granted('IS_AUTHENTICATED_FULLY') %}
             <ul class="list-group list-margin">

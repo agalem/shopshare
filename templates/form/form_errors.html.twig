@@ -1,0 +1,18 @@
+{#
+    Custom form errors template for bootstrap 3 tempate (bootstrap_3_layout.html.twig).
+    Changes were required for proper global error render.
+#}
+
+{% block form_errors %}
+    {% if errors|length > 0 -%}
+        {% if compound %}<div class="has-error">{% endif %}
+    {% if form.parent %}<span class="help-block">{% else %}<div class="alert alert-danger">{% endif %}
+        <ul class="list-unstyled">
+        {%- for error in errors -%}
+            <li>{{ error.message }}</li>
+        {%- endfor -%}
+    </ul>
+        {% if form.parent %}</span>{% else %}</div>{% endif %}
+        {% if compound %}</div>{% endif %}
+    {%- endif %}
+{% endblock %}

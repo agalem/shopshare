@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .custom-m-b {
+            margin-bottom: 10px;
+        }
+
+        .custom-m-t {
+            margin-top: 20px;
+        }
+
+        .custom-hide {
+            display: none;
+        }
+    </style>
+{% endblock %}
+
+{% block title %}
+    Application
+{% endblock %}
+
+{% block main %}
+    <h3 class="modal-title text-monospace custom-m-b">{{ 'label.buy_element'|trans({'%name%': editedProduct.name}) }}</h3>
+    <div class="form-group">
+        {{ form_start(form, { method: 'post', action: url('product_buy', {'id' : editedProduct.id }) }) }}
+        <div class="custom-hide">
+            {{ form_label(form.name, 'label.name'|trans) }}<br/>
+            <div class="form-input">
+                {{ form_widget(form.name) }}
+                {{ form_errors(form.name) }}
+            </div>
+        </div>
+        <br/>
+        <div class="custom-hide">
+            {{ form_label(form.isBought, 'label.isBought'|trans) }}<br/>
+            <div class="form-input">
+                {{ form_widget(form.isBought) }}
+                {{ form_errors(form.isBought) }}
+            </div>
+        </div>
+        <br/>
+        <div>
+            {{ form_label(form.value, 'label.value'|trans) }}<br/>
+            <div class="form-input">
+                {{ form_widget(form.value) }}
+                {{ form_errors(form.value) }}
+            </div>
+        </div>
+        <br/>
+        <div>
+            {{ form_label(form.quantity, 'label.quantity'|trans) }}<br/>
+            <div class="form-input">
+                {{ form_widget(form.quantity) }}
+                {{ form_errors(form.quantity) }}
+            </div>
+        </div>
+        <input type="submit" value="{{ 'action.save'|trans }}" class="btn btn-success custom-m-t" />
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

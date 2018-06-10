@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>{% block title %}Default title{% endblock %}</title>
+    {% block stylesheets %}
+        <!-- Bootstrap -->
+        <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
+
+    {% endblock %}
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+{% include 'default/_flash_messages.html.twig' %}
+    <!--<header class="header">
+        <button class="btn btn-outline-info my-2 my-sm-0" >Sign Out</button>
+    </header>-->
+    <div class="main-content">
+        <aside class="aside bg-info">
+            <h1 class="card-title text-light m-lg-2">ShopLista</h1>
+            {% if lists is defined and lists|length %}
+                <ul class="list-group list-margin" >
+                    {% for list in lists %}
+                        <a href="{{ url('lists_view', {'id': list.id}) }}" title="{{ list.name }}" class="text-light"><li class="list-group-item bg-info">{{ list.name }}</li></a>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <ul class="list-group list-margin">
+                <a href="{{ url('lists_manager') }}" title="{{ 'title.manage_lists'|trans }}" class="text-light"><li class="list-group-item bg-info">{{ 'title.manage_lists'|trans }}</li></a>
+                <a href="{{ url('list_add') }}" title="{{ 'title.add_list'|trans }}" class="text-light"><li class="list-group-item bg-info">{{ 'title.add_list'|trans }}</li></a>
+            </ul>
+        </aside>
+        <main class="lists-content">
+            {% block main %}{% endblock %}
+        </main>
+    </div>
+{% block javascripts %}
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('js/scripts.js') }}"></script>
+    <script>
+        function setActiveList() {
+            var address = window.location.href ;
+            address = address.split('/');
+            var id = address[address.length - 1];
+
+            var activeList  = document.getElementById(id);
+            activeList.className += ' bg-white text-dark';
+
+        }
+
+        setActiveList();
+    </script>
+{% endblock %}
+</body>
+</html>

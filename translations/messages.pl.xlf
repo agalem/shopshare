@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="file.ext">
+        <body>
+            <trans-unit id="label.view">
+                <source>label.view</source>
+                <target>Wyświetl</target>
+            </trans-unit>
+            <trans-unit id="label.nav.prev">
+               <source>labels.nav.prev</source>
+               <target>poprzednia strona</target>
+            </trans-unit>
+            <trans-unit id="label.nav.next">
+               <source>label.nav.next</source>
+               <target>następna strona</target>
+            </trans-unit>
+            <trans-unit id="action.save">
+                <source>action.save</source>
+                <target>Zapisz</target>
+            </trans-unit>
+            <trans-unit id="message.element_successfully_added">
+                <source>message.element_successfully_added</source>
+                <target>Dodano element</target>
+            </trans-unit>
+            <trans-unit id="message.record_not_found">
+                <source>message.record_not_found</source>
+                <target>Nie znaleziono rekordu</target>
+            </trans-unit>
+            <trans-unit id="message.element_successfully_edited">
+                <source>message.element_successfully_edited</source>
+                <target>Edycja zakończona sukcesem</target>
+            </trans-unit>
+            <trans-unit id="message.element_successfully_deleted">
+                <source>message.element_successfully_deleted</source>
+                <target>Element został usunięty</target>
+            </trans-unit>
+            <trans-unit id="action.delete">
+                <source>action.delete</source>
+                <target>Usuń</target>
+            </trans-unit>
+            <trans-unit id="label.yes">
+                <source>label.yes</source>
+                <target>Tak</target>
+            </trans-unit>
+            <trans-unit id="label.no">
+                <source>label.no</source>
+                <target>Nie</target>
+            </trans-unit>
+            <trans-unit id="label.edit">
+                <source>label.edit</source>
+                <target>Edytuj</target>
+            </trans-unit>
+            <trans-unit id="label.bought">
+                <source>label.bought</source>
+                <target>Kupione</target>
+            </trans-unit>
+            <trans-unit id="label.isBought">
+                <source>label.isBought</source>
+                <target>Czy kupione ?</target>
+            </trans-unit>
+            <trans-unit id="label.buy_element">
+                <source>label.buy_element</source>
+                <target>Kupiono '%name%'</target>
+            </trans-unit>
+            <trans-unit id="label.add_list">
+                <source>label.add_list</source>
+                <target>Utwórz nową listę</target>
+            </trans-unit>
+            <trans-unit id="label.add_element">
+                <source>label.add_element</source>
+                <target>Dodaj nowy produkt</target>
+            </trans-unit>
+            <trans-unit id="label.edit_list">
+                <source>label.edit_list</source>
+                <target>Edytuj listę '%name%'</target>
+            </trans-unit>
+            <trans-unit id="label.edit_element">
+                <source>label.edit_element</source>
+                <target>Edycja '%name%'</target>
+            </trans-unit>
+            <trans-unit id="label.edit_current_list">
+                <source>label.edit_current_list</source>
+                <target>Edytuj listę</target>
+            </trans-unit>
+            <trans-unit id="label.delete_list">
+                <source>label.delete_list</source>
+                <target>Na pewno chcesz usunąć listę '%name%'?</target>
+            </trans-unit>
+            <trans-unit id="label.delete_element">
+                <source>label.delete_element</source>
+                <target>Na pewno chcesz usunąć produkt '%name%'?</target>
+            </trans-unit>
+            <trans-unit id="label.manage_lists">
+                <source>label.manage_lists</source>
+                <target>Zarządzaj listami zakupów</target>
+            </trans-unit>
+            <trans-unit id="label.name">
+                <source>label.name</source>
+                <target>Nazwa  : </target>
+            </trans-unit>
+            <trans-unit id="label.max_cost">
+                <source>label.max_cost</source>
+                <target>Planowana kwota zakupów*  :</target>
+            </trans-unit>
+            <trans-unit id="label.no_max_cost">
+                <source>label.no_max_cost</source>
+                <target>Nie podano planowanej kwoty zakupów</target>
+            </trans-unit>
+            <trans-unit id="label.value">
+                <source>label.value</source>
+                <target>Cena*:</target>
+            </trans-unit>
+            <trans-unit id="label.quantity">
+                <source>label.quantity</source>
+                <target>Ilość*:</target>
+            </trans-unit>
+            <trans-unit id="title.choose_list">
+                <source>title.choose_list</source>
+                <target>Wybierz listę</target>
+            </trans-unit>
+            <trans-unit id="label.planned_spendings">
+                <source>label.planned_spendings</source>
+                <target>Planowany koszt :</target>
+            </trans-unit>
+            <trans-unit id="label.current_spendings">
+                <source>label.current_spendings</source>
+                <target>Dotychczas wydano :</target>
+            </trans-unit>
+            <trans-unit id="table.caption">
+                <source>table.caption</source>
+                <target>Lista rzeczy w liście zakupów: %name% </target>
+            </trans-unit>
+            <trans-unit id="title.manage_lists">
+                <source>title.manage_lists</source>
+                <target>Zarządzaj listami</target>
+            </trans-unit>
+            <trans-unit id="title.no_shoppinglists">
+                <source>title.no_shoppinglists</source>
+                <target>Nie masz jeszcze list zakupów</target>
+            </trans-unit>
+            <trans-unit id="title.add_list">
+                <source>title.add_list</source>
+                <target>Utwórz nową listę</target>
+            </trans-unit>
+            <trans-unit id="text.list_is_empty">
+                <source>text.list_is_empty</source>
+                <target>Lista nie ma jeszcze produktów</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

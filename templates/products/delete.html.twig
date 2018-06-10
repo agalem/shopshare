@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .custom-m-b {
+            margin-bottom: 10px;
+        }
+
+    </style>
+{% endblock %}
+
+{% block title %}
+    Application
+{% endblock %}
+
+{% block main %}
+    <h5 class="modal-title text-monospace custom-m-b">{{ 'label.delete_element'|trans({'%name%': deletedProduct.name}) }}</h5>
+    <div class="form-group">
+        {{ form_start(form, { method: 'post', action: url('product_delete', {'id': deletedProduct.id}) }) }}
+        {{ form_widget(form) }}
+        <input type="submit" value="{{ 'action.delete'|trans }}" class="btn btn-danger" />
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

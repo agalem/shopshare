@@ -88,4 +88,30 @@ class UserRepository {
 		}
 	}
 
+
+	public function save($user) {
+
+		if(isset($user['id']) && ctype_digit((string) $user['id'])) {
+			$id = $user['id'];
+			unset($user['id']);
+
+			$this->db->beginTransaction();
+
+			$this->db->update('users', ["login" => $user['login']], ['id' => $id]);
+			$this->db->update('users_info', ["password" => $user['password'], "mail" => $user['mail']], ['id_user' => $id]);
+
+			$this->db->commit();
+		} else {
+			$this->db->beginTransaction();
+
+			$this->db->insert('users', ["login" => $user['login']]);
+			$userId = $this->db->lastInsertId();
+			$this->db->insert('users_info', ["id_user" => $userId, "password" => $user['password'], "mail" => $user['mail']]);
+
+			$this->db->commit();
+
+			$this->loadUserByLogin($user['login']);
+		}
+	}
+
 }

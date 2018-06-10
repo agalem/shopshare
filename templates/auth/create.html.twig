@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.auth_login'|trans }}{% endblock %}
+
+{% block main %}
+    {% form_theme form with ['bootstrap_3_horizontal_layout.html.twig', 'form/form_errors.html.twig'] %}
+    <h1>{{ 'title.auth_login'|trans }}</h1>
+
+    {% if error is defined and error|length %}
+        {% include 'default/_single_alert_message.html.twig' with {
+        is_single_message: true,
+        is_dismissible: false,
+        type: 'danger',
+        message: error,
+        } %}
+    {% endif %}
+
+    <div>
+        {{ form_start(form, { method: 'post', action: path('auth_create') }) }}
+        {{ form_widget(form) }}
+        <input type="submit" value="{{ 'action.create'|trans }}" class="btn btn-success" />
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

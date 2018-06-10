@@ -5,10 +5,13 @@
  */
 namespace Controller;
 
+use Form\AccountType;
 use Form\LoginType;
 use Silex\Application;
 use Silex\Api\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Repository\UserRepository;
+use Symfony\Component\Security\Core\User\User;
 
 /**
  * Class AuthController.
@@ -21,11 +24,17 @@ class AuthController implements ControllerProviderInterface
 	public function connect(Application $app)
 	{
 		$controller = $app['controllers_factory'];
+
 		$controller->match('login', [$this, 'loginAction'])
 		           ->method('GET|POST')
 		           ->bind('auth_login');
+
 		$controller->get('logout', [$this, 'logoutAction'])
 		           ->bind('auth_logout');
+
+		$controller->match('create', [$this, 'createAction'])
+		           ->method('GET|POST')
+		           ->bind('auth_create');
 
 		return $controller;
 	}
@@ -64,5 +73,28 @@ class AuthController implements ControllerProviderInterface
 		$app['session']->clear();
 
 		return $app['twig']->render('auth/logout.html.twig', []);
+	}
+
+
+	public  function createAction(Application $app, Request $request) {
+		$user = [];
+
+		$form=$app['form.factory']->createBuilder(AccountType::class, $user)->getForm();
+		$form->handleRequest($request);
+
+		if($form->isSubmitted() && $form->isValid()) {
+			$usersRepository = new UserRepository($app['db']);
+			$newUser = $form->getData();
+			$newUser['password'] = $app['security.encoder.bcrypt']->encodePassword($newUser['password'], '');
+			$usersRepository->save($newUser);
+		}
+
+		return $app['twig']->render(
+			'auth/create.html.twig',
+			[
+				'user' => $user,
+				'form' => $form->createView(),
+			]
+		);
 	}
 }

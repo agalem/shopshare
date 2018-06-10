@@ -146,6 +146,18 @@
                 <source>text.list_is_empty</source>
                 <target>Lista nie ma jeszcze produktów</target>
             </trans-unit>
+            <trans-unit id="auth.login.label">
+                <source>auth.login.label</source>
+                <target>Zaloguj się</target>
+            </trans-unit>
+            <trans-unit id="auth.logout.label">
+                <source>auth.logout.label</source>
+                <target>Wyloguj się</target>
+            </trans-unit>
+            <trans-unit id="auth.create.label">
+                <source>auth.create.label</source>
+                <target>Utwórz konto</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

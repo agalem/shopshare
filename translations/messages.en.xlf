@@ -34,6 +34,14 @@
                 <source>message.element_successfully_deleted</source>
                 <target>Successfully deleted</target>
             </trans-unit>
+            <trans-unit id="message.user_created">
+                <source>message.user_created</source>
+                <target>Your account has been created. You can log in now.</target>
+            </trans-unit>
+            <trans-unit id="message.not_owner">
+                <source>message.not_owner</source>
+                <target>You cannot edit record which you didn't create.</target>
+            </trans-unit>
             <trans-unit id="action.delete">
                 <source>action.delete</source>
                 <target>Delete</target>
@@ -96,11 +104,11 @@
             </trans-unit>
             <trans-unit id="label.name">
                 <source>label.name</source>
-                <target>Name  : </target>
+                <target>Name</target>
             </trans-unit>
             <trans-unit id="label.max_cost">
                 <source>label.max_cost</source>
-                <target>Planned shopping costs*  :</target>
+                <target>Planned shopping costs*</target>
             </trans-unit>
             <trans-unit id="label.no_max_cost">
                 <source>label.no_max_cost</source>
@@ -108,11 +116,11 @@
             </trans-unit>
             <trans-unit id="label.value">
                 <source>label.value</source>
-                <target>Value*:</target>
+                <target>Value*</target>
             </trans-unit>
             <trans-unit id="label.quantity">
                 <source>label.quantity</source>
-                <target>Quantity*:</target>
+                <target>Quantity*</target>
             </trans-unit>
             <trans-unit id="label.planned_spendings">
                 <source>label.planned_spendings</source>
@@ -145,6 +153,10 @@
             <trans-unit id="text.list_is_empty">
                 <source>text.list_is_empty</source>
                 <target>There is no products in the list</target>
+            </trans-unit>
+            <trans-unit id="text.no_user_products">
+                <source>text.no_user_products</source>
+                <target>There is no your products in the list</target>
             </trans-unit>
             <trans-unit id="auth.login.label">
                 <source>auth.login.label</source>

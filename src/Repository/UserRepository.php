@@ -67,6 +67,19 @@ class UserRepository {
 		}
 	}
 
+	public function checkIfExists($login) {
+		try {
+			$queryBuilder = $this->db->createQueryBuilder();
+			$queryBuilder->select('u.id', 'u.login')
+				->from('users', 'u')
+				->where('u.login = :login')
+				->setParameter(':login', $login, \PDO::PARAM_STR);
+			return $queryBuilder->execute()->fetch();
+		} catch (DBALException $exception) {
+			return [];
+		}
+	}
+
 	public function getUserRoles($userId) {
 		$roles = [];
 

@@ -11,6 +11,7 @@ namespace Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -42,8 +43,31 @@ class ProductType extends AbstractType {
 			NumberType::class,
 			[
 				'label' => 'label.quantity',
+				'required' => true,
+				'scale' => 3,
+			]
+		);
+		$builder->add(
+			'isItem',
+			ChoiceType::class,
+			[
+				'label' => 'label.isItem',
+				'required' => true,
+				'choices' => [
+					'label.item' => 1,
+					'label.wieght' => 0,
+				],
+			]
+		);
+		$builder->add(
+			'message',
+			TextareaType::class,
+			[
+				'label' => 'label.message',
 				'required' => false,
-				'scale' => 1,
+				'attr' => [
+					'max_length' => 255,
+				],
 			]
 		);
 		$builder->add(

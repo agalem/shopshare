@@ -6,21 +6,52 @@
 {% endblock %}
 
 {% block main %}
-    <h4 class="modal-title text-monospace">{{ 'title.manage_lists'|trans }}</h4>
-    {% if lists is defined and lists|length %}
-        <table class="table table-hover">
-            <caption>{{ 'title.manage_lists'|trans }}</caption>
-            <tbody>
-            {% for list in lists %}
-                <tr>
-                    <th scope="row" class="text-uppercase">{{ list.name }}</th>
-                    <td class="custom-pos_rel"><a href="{{ url('list_edit', {'id' : list.id}) }}" class="btn btn-warning custom-btn_table custom-m-r">{{ 'label.edit'|trans }}</a></td>
-                    <td class="custom-pos_rel"><a href="{{ url('list_delete', {'id': list.id}) }}" class="btn btn-danger text-white custom-btn_table">{{ 'action.delete'|trans }}</a></td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>{{ 'title.no_shoppinglists'|trans }}</p><a href="{{ url('list_add') }}" class="text-success">{{ 'label.add_list'|trans }}</a>
-    {% endif %}
+    <h4 class="modal-title text-monospace mb-3">{{ 'title.manage_lists'|trans }}</h4>
+    <div class="row">
+        <div class="col-lg-5 col-md-10 column mb-4">
+            <h5 class="h5 text-monospace">Twoje listy:</h5>
+            {% if lists is defined and lists|length %}
+                <table class="table table-hover">
+                    <!--<caption>{{ 'title.manage_lists'|trans }}</caption>-->
+                    <tbody>
+                    {% for list in lists %}
+                        <tr>
+                            <th scope="row" class="text-uppercase">{{ list.name }}</th>
+                            <td class="custom-pos_rel"><a href="{{ url('list_edit', {'id' : list.id}) }}" class="btn btn-warning custom-btn_table custom-m-r">{{ 'label.edit'|trans }}</a></td>
+                            <td class="custom-pos_rel"><a href="{{ url('list_delete', {'id': list.id}) }}" class="btn btn-danger text-white custom-btn_table">{{ 'action.delete'|trans }}</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>{{ 'title.no_shoppinglists'|trans }}</p><a href="{{ url('list_add') }}" class="text-success">{{ 'label.add_list'|trans }}</a>
+            {% endif %}
+
+        </div>
+
+        <span style="width: 30px;"></span>
+
+        <div class="col-lg-5 col-md-10 column">
+
+            {% if linkedLists is defined and linkedLists|length %}
+            <h5 class="h5 text-monospace">Współdzielone listy:</h5>
+
+            <table class="table table-hover">
+                <!--<caption>{{ 'title.manage_lists'|trans }}</caption>-->
+                <tbody>
+                {% for list in linkedLists %}
+                    <tr>
+                        <th scope="row" class="text-uppercase">{{ list.name }}</th>
+                        <td class="custom-pos_rel"><a href="{{ url('list_edit', {'id' : list.id}) }}" class="btn btn-warning custom-btn_table custom-m-r">{{ 'label.edit'|trans }}</a></td>
+                        <td class="custom-pos_rel"><a href="{{ url('list_delete', {'id': list.id}) }}" class="btn btn-danger text-white custom-btn_table">{{ 'action.delete'|trans }}</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+
+        </div>
+    </div>
+
+
 {% endblock %}

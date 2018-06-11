@@ -7,6 +7,8 @@
 
 {% block main %}
     <h3 class="modal-title text-monospace custom-m-b">{{ 'label.edit_list'|trans({'%name%': editedList.name}) }}</h3>
+
+    {% if isOwner %}
     <div class="form-group">
         {{ form_start(form, { method: 'post', action: url('list_edit', {'id': editedList.id}) }) }}
         <div>
@@ -28,12 +30,16 @@
         {{ form_end(form) }}
     </div>
     <div class="horizontal-line"></div>
+
+    {% endif %}
+
+
     <a href="{{ url('product_add', {'id' : editedList.id}) }}"><button role="button" class="btn btn-success custom-m-b">{{ 'label.add_element'|trans }}</button></a>
     <table class="table table-hover">
-        {% if products is defined and products|length %}
+        {% if userProducts is defined and userProducts|length %}
             <caption>{{ 'table.caption'|trans({'%name%': editedList.name}) }}</caption>
             <tbody>
-            {% for product in products %}
+            {% for product in userProducts %}
                 <tr>
                     <td class="custom-narrow"><span class="badge badge-primary badge-pill">{{ product.quantity }}</span></th>
                     <th scope="row" class="text-uppercase {% if product.isBought == true %} custom-bought {% endif %}">{{ product.name }}</th>
@@ -43,7 +49,7 @@
             {% endfor %}
             </tbody>
         {% else %}
-            <p>{{ 'text.list_is_empty'|trans }}</p>
+            <p>{{ 'text.no_user_products'|trans }}</p>
         {% endif %}
     </table>
 {% endblock %}

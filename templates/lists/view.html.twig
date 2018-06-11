@@ -6,23 +6,54 @@
 {% endblock %}
 
 {% block main %}
-    <h3 class="modal-title text-monospace">{{ activeList.name }}</h3>
-    <table class="table table-hover">
-        {% if products is defined and products|length %}
-        <caption>{{ 'table.caption'|trans({'%name%': activeList.name}) }}</caption>
-        <tbody>
-        {% for product in products %}
-        <tr>
-            <td class="custom-narrow"><span class="badge badge-primary badge-pill">{{ product.quantity }}</span></th>
-            <th scope="row" class="text-uppercase {% if product.isBought == true %} custom-bought {% endif %}">{{ product.name }}</th>
-            {% if product.isBought == false %}
-                <td class="custom-pos_rel"><a href="{{ url('product_buy', {'id': product.id}) }}"><button type="button" class="btn btn-success custom-btn_table">{{ 'label.bought'|trans }}</button></a></td>
+    <h4 class="modal-title text-monospace mb-3">{{ activeList.name }}</h4>
+    <div class="row">
+        <div class="col-lg-5 col-md-10 column mb-4">
+            <h5 class="h5 text-monospace">Twoje produkty:</h5>
+            {% if userProducts is defined and userProducts|length %}
+                <table class="table table-hover">
+                    <!--<caption>{{ 'title.manage_lists'|trans }}</caption>-->
+                    <tbody>
+                    {% for product in userProducts %}
+                        <tr>
+                            <td class="custom-narrow"><span class="badge badge-primary badge-pill">{{ product.quantity }}</span></th>
+                            <th scope="row" class="text-uppercase {% if product.isBought == true %} custom-bought {% endif %}">{{ product.name }}</th>
+                            {% if product.isBought == false %}
+                                <td class="custom-pos_rel"><a href="{{ url('product_buy', {'id': product.id}) }}"><button type="button" class="btn btn-success custom-btn_table">{{ 'label.bought'|trans }}</button></a></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>{{ 'text.list_is_empty'|trans }}</p>
             {% endif %}
-        </tr>
-        {% endfor %}
-        </tbody>
-        {% else %}
-        <p>{{ 'text.list_is_empty'|trans }}</p>
-        {% endif %}
-    </table>
+
+        </div>
+
+        <span style="width: 30px;"></span>
+
+        <div class="col-lg-5 col-md-10 column">
+
+            {% if otherProducts is defined and otherProducts|length %}
+                <h5 class="h5 text-monospace">Pozostałe produkty:</h5>
+
+                <table class="table table-hover">
+                    <!--<caption>{{ 'title.manage_lists'|trans }}</caption>-->
+                    <tbody>
+                    {% for product in otherProducts %}
+                        <tr>
+                            <td class="custom-narrow"><span class="badge badge-primary badge-pill">{{ product.quantity }}</span></th>
+                            <th scope="row" class="text-uppercase {% if product.isBought == true %} custom-bought {% endif %}">{{ product.name }}</th>
+                            {% if product.isBought == false %}
+                                <td class="custom-pos_rel"><a href="{{ url('product_buy', {'id': product.id}) }}"><button type="button" class="btn btn-success custom-btn_table">{{ 'label.bought'|trans }}</button></a></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+        </div>
+    </div>
 {% endblock %}

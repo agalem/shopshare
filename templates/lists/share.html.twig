@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}
+    Application
+{% endblock %}
+
+{% block main %}
+<h3 class="h3 text-monospace custom-m-b">{{ 'label.share_list'|trans({'%name%': editedList.name}) }}</h3>
+<div class="form-group">
+    {{ form_start(form, { method: 'post', action: url('list_share', {'id': editedList.id}) }) }}
+    <div>
+        {{ form_label(form.user_login, 'label.user_login'|trans) }}<br/>
+        <div class="form-input">
+            {{ form_widget(form.user_login) }}
+            {{ form_errors(form.user_login) }}
+        </div>
+    </div>
+    <input type="submit" value="{{ 'action.add'|trans }}" class="btn btn-success custom-m-t" />
+    {{ form_end(form) }}
+</div>
+
+{% endblock %}

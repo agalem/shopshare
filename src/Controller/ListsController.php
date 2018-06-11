@@ -2,10 +2,12 @@
 
 namespace Controller;
 
+use Form\ListConnectionType;
 use Form\ProductType;
 use Form\ListType;
 use Repository\ProductsRepository;
 use Repository\ListsRepository;
+use Repository\UserRepository;
 use Silex\Application;
 use Silex\Api\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,6 +46,11 @@ class ListsController implements ControllerProviderInterface {
 		           ->assert('id', '[1-9]\d*' )
 		           ->bind('list_delete');
 
+		$controller->match('/{id}/share', [$this, 'shareAction'])
+		           ->method('GET|POST')
+		           ->assert('id', '[1-9]\d*')
+		           ->bind('list_share');
+
 		return $controller;
 	}
 
@@ -80,7 +87,15 @@ class ListsController implements ControllerProviderInterface {
 
 		$user = $this->getUser($app);
 
-		if(!$list or $list['createdBy'] != $user) {
+		$isLinked = false;
+
+		foreach ($listsRepository->findLinkedLists($user) as $linkedList) {
+			if($linkedList['id'] == $id) {
+				$isLinked = true;
+			}
+		}
+
+		if(!$list or ($list['createdBy'] != $user and $isLinked == false)) {
 			$app['session']->getFlashBag()->add(
 				'messages',
 				[
@@ -120,23 +135,26 @@ class ListsController implements ControllerProviderInterface {
 				'currentSpendings' => $listsRepository->getCurrentSpendings($id),
 				'lists' => $listsRepository->findAll($user),
 				'activeList' => $listsRepository->findOneById($id),
-				'products' => $listsRepository->findLinkedProducts($id),
+				'userProducts' => $listsRepository->findUserProducts($id, $user),
+				'otherProducts' => $listsRepository->findOtherProducts($id, $user),
 				'plannedSpendings' => $plannedSpendings,
 				'spendPercent' => $spendPercent,
 				'progressBarClass' => $progressBarClass,
+				'linkedLists' => $listsRepository->findLinkedLists($user),
 			]
 		);
 	}
 
 	public function managerAction(Application $app) {
-		$listRepository = new ListsRepository($app['db']);
+		$listsRepository = new ListsRepository($app['db']);
 
 		$user = $this->getUser($app);
 
 		return $app['twig']->render(
 			'lists/manager.html.twig',
 			[
-				'lists' => $listRepository->findAll($user),
+				'lists' => $listsRepository->findAll($user),
+				'linkedLists' => $listsRepository->findLinkedLists($user)
 			]
 		);
 	}
@@ -185,7 +203,15 @@ class ListsController implements ControllerProviderInterface {
 
 		$user = $this->getUser($app);
 
-		if(!$list || $list['createdBy'] != $user) {
+		$isLinked = false;
+
+		foreach ($listsRepository->findLinkedLists($user) as $linkedList) {
+			if($linkedList['id'] == $id) {
+				$isLinked = true;
+			}
+		}
+
+		if(!$list or ($list['createdBy'] != $user and $isLinked == false)) {
 			$app['session']->getFlashBag()->add(
 				'messages',
 				[
@@ -216,7 +242,9 @@ class ListsController implements ControllerProviderInterface {
 				'editedList' => $list,
 				'form' => $form->createView(),
 				'lists' => $listsRepository->findAll($user),
-				'products' => $listsRepository->findLinkedProducts($id),
+				'userProducts' => $listsRepository->findUserProducts($id, $user),
+				'linkedLists' => $listsRepository->findLinkedLists($user),
+				'isOwner' => ($list['createdBy'] == $user) ? true : false,
 			]
 		);
 	}
@@ -228,7 +256,7 @@ class ListsController implements ControllerProviderInterface {
 
 		$user = $this->getUser($app);
 
-		if(!$list || $list['createdBy'] != $user) {
+		if(!$list) {
 			$app['session']->getFlashBag()->add(
 				'messages',
 				[
@@ -237,13 +265,50 @@ class ListsController implements ControllerProviderInterface {
 				]
 			);
 
-			return $app->redirect($app['url_generator']->generate('lists_index'));
+			return $app->redirect($app['url_generator']->generate('lists_manager'));
 		}
+
+		$isLinked = false;
+
+		foreach ($listsRepository->findLinkedLists($user) as $linkedList) {
+			if($linkedList['id'] == $id) {
+				$isLinked = true;
+			}
+		}
+
+		if($list['createdBy'] != $user and $isLinked == false){
+			$app['session']->getFlashBag()->add(
+				'messages',
+				[
+					'type' => 'danger',
+					'message' => 'message.not_owner',
+				]
+			);
+
+			return $app->redirect($app['url_generator']->generate('lists_manager'));
+
+		} else if ($list['createdBy'] != $user and $isLinked == true) {
+
+			$listsRepository->deleteConnection($id);
+
+			$app['session']->getFlashBag()->add(
+				'messages',
+				[
+					'type' => 'success',
+					'message' => 'message.connection_deleted',
+				]
+			);
+
+			return $app->redirect($app['url_generator']->generate('lists_manager'));
+		}
+
 
 		$form = $app['form.factory']->createBuilder(FormType::class, $list)->add('id', HiddenType::class)->getForm();
 		$form->handleRequest($request);
 
 		if ($form->isSubmitted() && $form->isValid()) {
+
+			$listsRepository->deleteConnection($id);
 			$listsRepository->delete($form->getData());
 
 			$app['session']->getFlashBag()->add(
@@ -255,7 +320,7 @@ class ListsController implements ControllerProviderInterface {
 			);
 
 			return $app->redirect(
-				$app['url_generator']->generate('lists_index'),
+				$app['url_generator']->generate('lists_manager'),
 				301
 			);
 		}
@@ -270,6 +335,56 @@ class ListsController implements ControllerProviderInterface {
 		);
 	}
 
+
+	public function shareAction(Application $app, $id, Request $request) {
+		$userRepository = new UserRepository($app['db']);
+		$listsRepository = new ListsRepository($app['db']);
+		$list = $listsRepository->findOneById($id);
+
+		$username = [];
+
+		$user = $this->getUser($app);
+
+		if(!$list || $list['createdBy'] != $user) {
+			$app['session']->getFlashBag()->add(
+				'messages',
+				[
+					'type' => 'warning',
+					'message' => 'message.record_not_found',
+				]
+			);
+			return $app->redirect($app['url_generator']->generate('lists_index'));
+		}
+
+		$form = $app['form.factory']->createBuilder(ListConnectionType::class, $username)->getForm();
+		$form->handleRequest($request);
+
+		if($form->isSubmitted() && $form->isValid()) {
+
+			$listsRepository->addUser($id, $form->getData());
+
+			$app['session']->getFlashBag()->add(
+				'messages',
+				[
+					'type' => 'success',
+					'message' => 'message.user_successfully_added',
+				]
+			);
+
+			return $app->redirect($app['url_generator']->generate('list_share', array('id' => $id)), 301);
+		}
+
+		return $app['twig']->render(
+			'lists/share.html.twig',
+			[
+				'lists' => $listsRepository->findAll($user),
+				'form' => $form->createView(),
+				'editedList' => $list,
+			]
+		);
+	}
+
+
 	public function addProductAction(Application $app, $id, Request $request) {
 		$productsRepository = new ProductsRepository($app['db']);
 		$listsRepository = new ListsRepository($app['db']);
@@ -279,7 +394,15 @@ class ListsController implements ControllerProviderInterface {
 
 		$user = $this->getUser($app);
 
-		if(!$list || $list['createdBy'] != $user) {
+		$isLinked = false;
+
+		foreach ($listsRepository->findLinkedLists($user) as $linkedList) {
+			if($linkedList['id'] == $id) {
+				$isLinked = true;
+			}
+		}
+
+		if(!$list or ($list['createdBy'] != $user and $isLinked == false)) {
 			$app['session']->getFlashBag()->add(
 				'messages',
 				[
@@ -297,7 +420,7 @@ class ListsController implements ControllerProviderInterface {
 		if($form->isSubmitted() && $form->isValid()) {
 
 			$listsRepository->updateModiefiedDate($id);
-			$productsRepository->save($id, $form->getData());
+			$productsRepository->save($id, $form->getData(), $user);
 
 			$app['session']->getFlashBag()->add(
 				'messages',
@@ -317,6 +440,7 @@ class ListsController implements ControllerProviderInterface {
 				'form' => $form->createView(),
 				'lists' => $listsRepository->findAll($user),
 				'editedList' => $listsRepository->findOneById($id),
+				'displayIsBought'=> false,
 			]
 		);
 	}

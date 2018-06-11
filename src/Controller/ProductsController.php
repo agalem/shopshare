@@ -51,6 +51,7 @@ class ProductsController implements ControllerProviderInterface {
 		return $user;
 	}
 
+
 	public function editAction(Application $app, $id, Request $request) {
 
 		$productsRepository = new ProductsRepository($app['db']);
@@ -73,11 +74,24 @@ class ProductsController implements ControllerProviderInterface {
 			return $app->redirect($app['url_generator']->generate('list_edit', array('id' => $listId)));
 		}
 
+		if ($product['createdBy'] != $user) {
+			$app['session']->getFlashBag()->add(
+				'messages',
+				[
+					'type' => 'danger',
+					'message' => 'message.not_owner',
+				]
+			);
+
+			return $app->redirect($app['url_generator']->generate('list_edit', array('id' => $listId)));
+		}
+
 		$form = $app['form.factory']->createBuilder(ProductType::class, $product)->getForm();
 		$form->handleRequest($request);
 
 		if($form->isSubmitted() && $form->isValid()){
-			$productsRepository->save($listId, $form->getData());
+
+			$productsRepository->save($listId, $form->getData(), $user);
 
 			$app['session']->getFlashBag()->add(
 				'messages',
@@ -107,10 +121,19 @@ class ProductsController implements ControllerProviderInterface {
 		$product = $productsRepository->findOneById($id);
 		$connectedList = $listsRepository->getConnectedList($id);
 		$listId = $connectedList['list_id'];
+		$listOwner = $listsRepository->findOneById($listId);
 
 		$user = $this->getUser($app);
 
-		if(!$product) {
+		$isLinked = false;
+
+		foreach ($listsRepository->findLinkedLists($user) as $linkedList) {
+			if($linkedList['id'] == $listId) {
+				$isLinked = true;
+			}
+		}
+
+		if(!$product or ($listOwner['createdBy'] != $user and $isLinked == false)) {
 			$app['session']->getFlashBag()->add(
 				'messages',
 				[
@@ -126,7 +149,8 @@ class ProductsController implements ControllerProviderInterface {
 		$form->handleRequest($request);
 
 		if($form->isSubmitted() && $form->isValid()){
-			$productsRepository->buy($form->getData());
+			$productsRepository->buy($form->getData(), $user);
+
 
 			$app['session']->getFlashBag()->add(
 				'messages',
@@ -146,6 +170,7 @@ class ProductsController implements ControllerProviderInterface {
 				'form' => $form->createView(),
 				'lists' => $listsRepository->findAll($user),
 				'previousList' => $listId,
+				'isBuyingForm' => true,
 			]
 		);
 	}
@@ -166,6 +191,18 @@ class ProductsController implements ControllerProviderInterface {
 				[
 					'type' => 'warning',
 					'message' => 'message.record_not_found',
+				]
+			);
+
+			return $app->redirect($app['url_generator']->generate('list_edit', array('id' => $listId)));
+		}
+
+		if ($product['createdBy'] != $user) {
+			$app['session']->getFlashBag()->add(
+				'messages',
+				[
+					'type' => 'danger',
+					'message' => 'message.not_owner',
 				]
 			);
 

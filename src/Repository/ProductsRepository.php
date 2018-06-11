@@ -48,7 +48,9 @@ class ProductsRepository {
 		return $queryBuilder->execute()->fetchAll();
 	}
 
-	public function save($listId, $product)
+
+
+	public function save($listId, $product, $username)
 	{
 		$this->db->beginTransaction();
 
@@ -57,6 +59,9 @@ class ProductsRepository {
 			$product['modifiedAt'] = $currentDateTime->format('Y-m-d H:i:s');
 			$product['finalValue'] = $product['value']*$product['quantity'];
 			$product['isBought'] = 0;
+			$product['createdBy'] = $username;
+			$product['lastModifiedBy'] = $username;
+
 			if(isset($product['id']) && ctype_digit((string) $product['id'])) {
 				$productId = $product['id'];
 				unset($product['id']);
@@ -83,18 +88,42 @@ class ProductsRepository {
 		$this->db->delete('products', ['id' => $product['id']]);
 	}
 
-	public function buy($product) {
+
+	public function buy($product, $user) {
 		$this->db->beginTransaction();
+
+		$previousState = $this->findOneById($product['id']);
+		$finalQuantity = $previousState['quantity'];
+		$previousQuantity = $previousState['currentQuantity'];
+		$previousValue = $previousState['finalValue'];
+
 
 		try {
 			$currentDateTime = new \DateTime();
 			$product['modifiedAt'] = $currentDateTime->format('Y-m-d H:i:s');
-			$product['isBought'] = 1;
-			$product['finalValue'] = $product['value']*$product['quantity'];
+			$product['currentQuantity'] = $product['quantity'] + $previousQuantity;
+			$product['finalValue'] = $previousValue + ($product['value']*$product['quantity']);
+			$product['quantity'] = $finalQuantity - $product['quantity'];
+			if( $product['quantity'] - $product['currentQuantity'] <= 0) {
+				$product['isBought'] = 1;
+			}
+			$product['lastModifiedBy'] = $user;
 			if(isset($product['id']) && ctype_digit((string) $product['id'])) {
 				$productId = $product['id'];
 				unset($product['id']);
+
 				$this->db->update('products', $product, ['id' => $productId]);
+
+				$productAction = [];
+				$productAction['id_product'] = $productId;
+				$productAction['modifiedBy'] = $user;
+				$productAction['quantity'] = $product['quantity'] + $finalQuantity;
+				$productAction['price'] = $product['value'];
+				$productAction['message'] = $product['message'];
+
+				$this->db->insert('products_actions', $productAction);
+
+
 			} else {
 				$product['createdAt'] = $currentDateTime->format('Y-m-d H:i:s');
 				$this->db->insert('products', $product);
@@ -105,6 +134,7 @@ class ProductsRepository {
 			throw $e;
 		}
 	}
+
 
 	protected function removeLinkedProducts($productId) {
 		return $this->db->delete('products_lists', ['product_id' => $productId]);
@@ -128,7 +158,7 @@ class ProductsRepository {
 	protected function queryAll() {
 		$queryBuilder = $this->db->createQueryBuilder();
 
-		return $queryBuilder->select('p.id', 'p.name', 'p.value', 'p.quantity', 'p.isBought')
+		return $queryBuilder->select('p.id', 'p.name', 'p.value', 'p.quantity', 'p.isBought', 'p.createdBy', 'p.currentQuantity', 'p.lastModifiedBy', 'p.message', 'p.modifiedAt', 'p.finalValue' )
 		                    ->from('products', 'p');
 	}
 }

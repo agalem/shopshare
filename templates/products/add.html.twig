@@ -21,39 +21,71 @@
 {% endblock %}
 
 {% block main %}
+    {% form_theme form with ['bootstrap_3_horizontal_layout.html.twig', 'form/form_errors.html.twig'] %}
+
+    {% if error is defined and error|length %}
+        {% include 'default/_single_alert_message.html.twig' with {
+        is_single_message: true,
+        is_dismissible: false,
+        type: 'danger',
+        message: error,
+        } %}
+    {% endif %}
+
     <h3 class="modal-title text-monospace custom-m-b">{{ 'label.add_element'|trans }} &#8594; '{{ editedList.name }}'</h3>
-    <div class="form-group">
+    <div>
         {{ form_start(form, { method: 'post', action: url('product_add', {'id' : editedList.id}) }) }}
-        <div>
-            {{ form_label(form.name, 'label.name'|trans) }}<br/>
-            <div class="form-input">
+        <div class="form-group row">
+            <div class="col-form-label">{{ form_label(form.name, 'label.name'|trans) }}</div>
+            <div class="col-auto">
                 {{ form_widget(form.name) }}
                 {{ form_errors(form.name) }}
             </div>
         </div>
-        <br/>
-        <div>
-            {{ form_label(form.value, 'label.value'|trans) }}<br/>
-            <div class="form-input">
-                {{ form_widget(form.value) }}
-                {{ form_errors(form.value) }}
+
+        <div class="form-group row">
+            <div class="col-form-label">{{ form_label(form.value, 'label.value'|trans) }}<br/></div>
+            <div>
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">PLN</div>
+                    </div>
+                    {{ form_widget(form.value) }}
+                    {{ form_errors(form.value) }}
+                </div>
             </div>
         </div>
-        <br/>
-        <div>
-            {{ form_label(form.quantity, 'label.quantity'|trans) }}<br/>
-            <div class="form-input">
+
+        <div class="form-group form-row align-items-center ">
+            <div class="col-form-label">{{ form_label(form.quantity, 'label.quantity'|trans) }}</div>
+            <div >
                 {{ form_widget(form.quantity) }}
                 {{ form_errors(form.quantity) }}
             </div>
-        </div>
-        <div class="custom-hidden">
-            {{ form_label(form.isBought, 'label.isBought'|trans) }}<br/>
-            <div class="form-input">
-                {{ form_widget(form.isBought) }}
-                {{ form_errors(form.isBought) }}
+
+            <div class="col-form-label">{{ form_label(form.isItem, 'label.isItem'|trans) }}</div>
+            <div >
+                {{ form_widget(form.isItem) }}
+                {{ form_errors(form.isItem) }}
             </div>
         </div>
+
+        <div class="form-group row ">
+            <div class="col-form-label">{{ form_label(form.message, 'label.message'|trans) }}</div>
+            <div >
+                {{ form_widget(form.message) }}
+                {{ form_widget(form.message) }}
+            </div>
+        </div>
+
+        <div class="form-group row {% if displayIsBought == false %} custom-hidden {% endif %}">
+            <div class="col-form-label">{{ form_label(form.isBought, 'label.isBought'|trans) }}</div>
+            <div >
+                {{ form_widget(form.isBought) }}
+                {{ form_widget(form.isBought) }}
+            </div>
+        </div>
+
         <input type="submit" value="{{ 'action.save'|trans }}" class="btn btn-success custom-m-t" />
         {{ form_end(form) }}
     </div>

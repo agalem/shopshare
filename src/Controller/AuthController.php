@@ -87,6 +87,16 @@ class AuthController implements ControllerProviderInterface
 			$newUser = $form->getData();
 			$newUser['password'] = $app['security.encoder.bcrypt']->encodePassword($newUser['password'], '');
 			$usersRepository->save($newUser);
+
+			$app['session']->getFlashBag()->add(
+				'messages',
+				[
+					'type' => 'success',
+					'message' => 'message.user_created',
+				]
+			);
+
+			return $app->redirect($app['url_generator']->generate('auth_login'), 301);
 		}
 
 		return $app['twig']->render(

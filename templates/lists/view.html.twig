@@ -17,7 +17,14 @@
                     {% for product in userProducts %}
                         <tr>
                             <td class="custom-narrow"><span class="badge badge-primary badge-pill">{{ product.quantity }}</span></th>
-                            <th scope="row" class="text-uppercase {% if product.isBought == true %} custom-bought {% endif %}">{{ product.name }}</th>
+                            <th scope="row" class="text-uppercase {% if product.isBought == true %} custom-bought {% endif %}">{{ product.name }}
+                                <p>
+                                Added by: {{ product.createdBy }}
+                                </p>
+                                <p>
+                                    Added at: {{ product.createdAt }}
+                                </p>
+                            </th>
                             {% if product.isBought == false %}
                                 <td class="custom-pos_rel"><a href="{{ url('product_buy', {'id': product.id}) }}"><button type="button" class="btn btn-success custom-btn_table">{{ 'label.bought'|trans }}</button></a></td>
                             {% endif %}

@@ -103,8 +103,10 @@ class ListsRepository {
 	}
 
 	public function delete($list) {
-		$this->db->delete('lists', ['id' => $list['id']]);
+
 		$this->removeLinkedProducts($list['id']);
+		$this->db->delete('lists', ['id' => $list['id']]);
+
 	}
 
 	public function deleteConnection($listId) {
@@ -139,7 +141,7 @@ class ListsRepository {
 		$productsIds = $this->findLinkedProductsIds($listId);
 
 		$queryBuilder = $this->db->createQueryBuilder();
-		$queryBuilder->select('p.id', 'p.name', 'p.value', 'p.quantity', 'p.isBought', 'p.createdBy', 'p.lastModifiedBy')
+		$queryBuilder->select('p.id', 'p.name', 'p.value', 'p.quantity', 'p.isBought', 'p.createdBy', 'p.lastModifiedBy', 'p.createdAt')
 			->from('products', 'p')
 			->where('p.id IN (:ids) AND p.createdBy = :user')
 			->setParameter(':ids', $productsIds,  \Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
@@ -153,7 +155,7 @@ class ListsRepository {
 		$productsIds = $this->findLinkedProductsIds($listId);
 
 		$queryBuilder = $this->db->createQueryBuilder();
-		$queryBuilder->select('p.id', 'p.name', 'p.value', 'p.quantity', 'p.isBought', 'p.createdBy', 'p.lastModifiedBy')
+		$queryBuilder->select('p.id', 'p.name', 'p.value', 'p.quantity', 'p.isBought', 'p.createdBy', 'p.lastModifiedBy', 'p.createdAt')
 		             ->from('products', 'p')
 		             ->where('p.id IN (:ids) AND p.createdBy NOT LIKE :user')
 		             ->setParameter(':ids', $productsIds,  \Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
@@ -214,7 +216,28 @@ class ListsRepository {
 	}
 
 	protected function removeLinkedProducts($listId) {
-		return $this->db->delete('products_lists', ['list_id' => $listId]);
+		$this->db->beginTransaction();
+
+		try {
+
+			$productsIds = $this->findLinkedProductsIds($listId);
+
+			foreach ($productsIds as $productId) {
+				$this->db->delete('products_actions', ['id_product' => $productId]);
+			}
+
+			$this->db->delete('products_lists', ['list_id' => $listId]);
+
+			foreach ($productsIds as $productId) {
+				$this->db->delete('products', ['id' => $productId]);
+			}
+
+			$this->db->commit();
+
+		} catch (DBALException $exception) {
+			throw $exception;
+		}
+
 	}
 
 	protected function queryAll() {

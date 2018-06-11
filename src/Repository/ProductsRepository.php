@@ -96,18 +96,21 @@ class ProductsRepository {
 		$finalQuantity = $previousState['quantity'];
 		$previousQuantity = $previousState['currentQuantity'];
 		$previousValue = $previousState['finalValue'];
-
+		$previousMessage = $previousState['message'];
 
 		try {
 			$currentDateTime = new \DateTime();
 			$product['modifiedAt'] = $currentDateTime->format('Y-m-d H:i:s');
 			$product['currentQuantity'] = $product['quantity'] + $previousQuantity;
 			$product['finalValue'] = $previousValue + ($product['value']*$product['quantity']);
+			$currentQuantity = $product['quantity'];
 			$product['quantity'] = $finalQuantity - $product['quantity'];
-			if( $product['quantity'] - $product['currentQuantity'] <= 0) {
+			if( $product['quantity'] <= 0 and ($product['quantity'] - $product['currentQuantity'] <= 0)) {
 				$product['isBought'] = 1;
 			}
 			$product['lastModifiedBy'] = $user;
+			$currentMessage = $product['message'];
+			$product['message'] = $previousMessage;
 			if(isset($product['id']) && ctype_digit((string) $product['id'])) {
 				$productId = $product['id'];
 				unset($product['id']);
@@ -117,9 +120,9 @@ class ProductsRepository {
 				$productAction = [];
 				$productAction['id_product'] = $productId;
 				$productAction['modifiedBy'] = $user;
-				$productAction['quantity'] = $product['quantity'] + $finalQuantity;
+				$productAction['quantity'] = $currentQuantity;
 				$productAction['price'] = $product['value'];
-				$productAction['message'] = $product['message'];
+				$productAction['message'] = $currentMessage;
 
 				$this->db->insert('products_actions', $productAction);
 
@@ -137,7 +140,17 @@ class ProductsRepository {
 
 
 	protected function removeLinkedProducts($productId) {
-		return $this->db->delete('products_lists', ['product_id' => $productId]);
+		$this->db->beginTransaction();
+
+		try {
+
+			$this->db->delete('products_actions', ['id_product' => $productId]);
+			$this->db->delete('products_lists', ['product_id' => $productId]);
+
+		} catch (DBALException $exception) {
+			throw $exception;
+		}
+
 	}
 
 	protected function addLinkedProducts($listId, $productsIds) {
@@ -158,7 +171,7 @@ class ProductsRepository {
 	protected function queryAll() {
 		$queryBuilder = $this->db->createQueryBuilder();
 
-		return $queryBuilder->select('p.id', 'p.name', 'p.value', 'p.quantity', 'p.isBought', 'p.createdBy', 'p.currentQuantity', 'p.lastModifiedBy', 'p.message', 'p.modifiedAt', 'p.finalValue' )
+		return $queryBuilder->select('p.id', 'p.name', 'p.value', 'p.quantity', 'p.isBought', 'p.createdBy', 'p.currentQuantity', 'p.lastModifiedBy', 'p.message', 'p.modifiedAt', 'p.finalValue','p.createdAt' )
 		                    ->from('products', 'p');
 	}
 }

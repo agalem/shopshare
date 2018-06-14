@@ -14,6 +14,7 @@ $app->mount('/lists', new ListsController());
 $app->mount('/product', new \Controller\ProductsController());
 $app->mount('/auth', new \Controller\AuthController());
 $app->mount('/wallet', new \Controller\WalletController());
+$app->mount('/admin', new \Controller\AdminController());
 
 $app->error(function (\Exception $e, Request $request, $code) use ($app) {
     if ($app['debug']) {

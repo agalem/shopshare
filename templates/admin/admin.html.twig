@@ -1,0 +1,25 @@
+{% extends "base.html.twig" %}
+
+
+{% block title %}
+    Application
+{% endblock %}
+
+{% block main %}
+    <h4 class="modal-title text-monospace">{{ 'title.manage_users'|trans }}</h4>
+    {% if users is defined and users|length %}
+        <table class="table table-hover">
+            <caption>{{ 'title.manage_users'|trans }}</caption>
+            <tbody>
+            {% for user in users %}
+                <tr>
+                    <th scope="row" class="text-uppercase">{{ user.login }}</th>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>{{ 'title.no_users'|trans }}</p>
+    {% endif %}
+{% endblock %}

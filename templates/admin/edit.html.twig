@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}
+    Application
+{% endblock %}
+
+{% block main %}
+    <h3 class="modal-title text-monospace custom-m-b">{{ 'label.edit_list'|trans({'%name%': editedUser.login}) }}</h3>
+    <div class="form-group">
+        {{ form_start(form, { method: 'post', action: url('user_edit', {'id': editedUser.id}) }) }}
+        <div>
+            {{ form_label(form.password, 'label.password'|trans) }}<br/>
+            <div class="form-input">
+                {{ form_widget(form.password) }}
+                {{ form_errors(form.password) }}
+            </div>
+        </div>
+        <input type="submit" value="{{ 'action.change'|trans }}" class="btn btn-success custom-m-t" />
+        {{ form_end(form) }}
+    </div>
+
+{% endblock %}

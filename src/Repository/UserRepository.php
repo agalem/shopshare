@@ -124,4 +124,69 @@ class UserRepository {
 
 	}
 
+	public function findAllUsers() {
+
+		try {
+			$users = $this->queryAll();
+
+			return $users->execute()->fetchAll();
+
+		} catch (DBALException $exception) {
+
+			return [];
+
+		}
+
+	}
+
+	public function findUserById($id) {
+
+		try {
+			$queryBuilder = $this->queryAll();
+			$queryBuilder->where('u.id = :id')
+			             ->setParameter(':id', $id, \PDO::PARAM_INT);
+			return $queryBuilder->execute()->fetch();
+		} catch (DBALException $exception) {
+			return [];
+		}
+
+	}
+
+	public function changePassword($id, $password) {
+
+		try {
+			$user = $this->findUserById($id);
+
+			if(!$user) {
+				return [];
+			}
+
+			$this->db->update('users', $password, ['id' => $id]);
+
+		} catch (DBALException $exception) {
+
+			return [];
+
+		}
+
+	}
+
+	private function queryAll() {
+
+		try {
+
+			$queryBuilder = $this->db->createQueryBuilder();
+			$queryBuilder->select('u.id', 'u.login', 'u.password', 'u.role_id')
+			             ->from('users', 'u');
+
+			return $queryBuilder;
+
+		} catch (DBALException $exception) {
+
+			return [];
+
+		}
+
+	}
+
 }

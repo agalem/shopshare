@@ -18,10 +18,10 @@
                         <tr>
                             <td class="custom-narrow"><span class="badge badge-primary badge-pill">{{ product.quantity }}</span></th>
                             <th scope="row" class="text-uppercase {% if product.isBought == true %} custom-bought {% endif %}">{{ product.name }}
-                                <p>
+                                <p style="display:none;">
                                 Added by: {{ product.createdBy }}
                                 </p>
-                                <p>
+                                <p style="display:none;">
                                     Added at: {{ product.createdAt }}
                                 </p>
                             </th>

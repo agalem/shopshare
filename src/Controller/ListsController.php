@@ -13,6 +13,7 @@ use Silex\Api\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Security\Core\User\User;
 
 class ListsController implements ControllerProviderInterface {
 
@@ -54,29 +55,28 @@ class ListsController implements ControllerProviderInterface {
 		return $controller;
 	}
 
-	public function getUser(Application $app) {
-		$token = $app['security.token_storage']->getToken();
 
-		if(null !== $token) {
-			$user = $token->getUsername();
-		}
-
-		return $user;
-	}
 
 	public function indexAction(Application $app) {
 		$listsRepository = new ListsRepository($app['db']);
+		$userRepository = new UserRepository($app['db']);
 
-		$user = $this->getUser($app);
+		$user = $this->getUsername($app);
+		$userId = $this->getUserId($app, $user);
 
+		$userRole = $userRepository->getUserRoles($userId)[0];
+
+		if($userRole == 'ROLE_ADMIN') {
+			return $app->redirect($app['url_generator']->generate('lists_manager'));
+		}
 
 
 		return $app['twig']->render(
 			'lists/index.html.twig',
 			[
-				'lists' => $listsRepository->findAll($user),
+				'lists' => $listsRepository->findAll($userId),
 				'name' => $user,
-				'linkedLists' => $listsRepository->findLinkedLists($user)
+				'linkedLists' => $listsRepository->findLinkedLists($userId)
 			]
 		);
 	}
@@ -85,17 +85,18 @@ class ListsController implements ControllerProviderInterface {
 		$listsRepository = new ListsRepository($app['db']);
 		$list = $listsRepository->findOneById($id);
 
-		$user = $this->getUser($app);
+		$username = $this->getUsername($app);
+		$userId = $this->getUserId($app, $username);
 
 		$isLinked = false;
 
-		foreach ($listsRepository->findLinkedLists($user) as $linkedList) {
+		foreach ($listsRepository->findLinkedLists($userId) as $linkedList) {
 			if($linkedList['id'] == $id) {
 				$isLinked = true;
 			}
 		}
 
-		if(!$list or ($list['createdBy'] != $user and $isLinked == false)) {
+		if(!$list or ($list['createdBy'] != $userId and $isLinked == false)) {
 			$app['session']->getFlashBag()->add(
 				'messages',
 				[
@@ -126,21 +127,19 @@ class ListsController implements ControllerProviderInterface {
 			$progressBarClass = 'bg-danger text-light';
 		}
 
-		$user = $this->getUser($app);
-
 
 		return $app['twig']->render(
 			'lists/view.html.twig',
 			[
 				'currentSpendings' => $listsRepository->getCurrentSpendings($id),
-				'lists' => $listsRepository->findAll($user),
+				'lists' => $listsRepository->findAll($userId),
 				'activeList' => $listsRepository->findOneById($id),
-				'userProducts' => $listsRepository->findUserProducts($id, $user),
-				'otherProducts' => $listsRepository->findOtherProducts($id, $user),
+				'userProducts' => $listsRepository->findUserProducts($id, $userId),//TODO
+				'otherProducts' => $listsRepository->findOtherProducts($id, $userId),
 				'plannedSpendings' => $plannedSpendings,
 				'spendPercent' => $spendPercent,
 				'progressBarClass' => $progressBarClass,
-				'linkedLists' => $listsRepository->findLinkedLists($user),
+				'linkedLists' => $listsRepository->findLinkedLists($userId),
 			]
 		);
 	}
@@ -148,13 +147,14 @@ class ListsController implements ControllerProviderInterface {
 	public function managerAction(Application $app) {
 		$listsRepository = new ListsRepository($app['db']);
 
-		$user = $this->getUser($app);
+		$username = $this->getUsername($app);
+		$userId = $this->getUserId($app, $username);
 
 		return $app['twig']->render(
 			'lists/manager.html.twig',
 			[
-				'lists' => $listsRepository->findAll($user),
-				'linkedLists' => $listsRepository->findLinkedLists($user)
+				'lists' => $listsRepository->findAll($userId),
+				'linkedLists' => $listsRepository->findLinkedLists($userId)
 			]
 		);
 	}
@@ -167,11 +167,12 @@ class ListsController implements ControllerProviderInterface {
 		$form = $app['form.factory']->createBuilder(ListType::class, $list)->getForm();
 		$form->handleRequest($request);
 
-		$user = $this->getUser($app);
+		$username = $this->getUsername($app);
+		$userId = $this->getUserId($app, $username);
 
 		if($form->isSubmitted() && $form->isValid()) {
 			$newList = $form->getData();
-			$newList['createdBy'] = $user;
+			$newList['createdBy'] = $userId;
 
 			$listsRepository->save($newList);
 
@@ -192,7 +193,7 @@ class ListsController implements ControllerProviderInterface {
 			[
 				'newList' => $list,
 				'form' => $form->createView(),
-				'lists' => $listsRepository->findAll($user),
+				'lists' => $listsRepository->findAll($userId),
 			]
 		);
 	}
@@ -201,17 +202,18 @@ class ListsController implements ControllerProviderInterface {
 		$listsRepository = new ListsRepository($app['db']);
 		$list = $listsRepository->findOneById($id);
 
-		$user = $this->getUser($app);
+		$username = $this->getUsername($app);
+		$userId = $this->getUserId($app, $username);
 
 		$isLinked = false;
 
-		foreach ($listsRepository->findLinkedLists($user) as $linkedList) {
+		foreach ($listsRepository->findLinkedLists($userId) as $linkedList) {
 			if($linkedList['id'] == $id) {
 				$isLinked = true;
 			}
 		}
 
-		if(!$list or ($list['createdBy'] != $user and $isLinked == false)) {
+		if(!$list or ($list['createdBy'] != $userId and $isLinked == false)) {
 			$app['session']->getFlashBag()->add(
 				'messages',
 				[
@@ -225,7 +227,7 @@ class ListsController implements ControllerProviderInterface {
 		$form->handleRequest($request);
 		if($form->isSubmitted() && $form->isValid()){
 			$newList = $form->getData();
-			$newList['lastModifiedBy'] = $user;
+			$newList['lastModifiedBy'] = $userId;
 			$listsRepository->save($newList);
 			$app['session']->getFlashBag()->add(
 				'messages',
@@ -241,10 +243,10 @@ class ListsController implements ControllerProviderInterface {
 			[
 				'editedList' => $list,
 				'form' => $form->createView(),
-				'lists' => $listsRepository->findAll($user),
-				'userProducts' => $listsRepository->findUserProducts($id, $user),
-				'linkedLists' => $listsRepository->findLinkedLists($user),
-				'isOwner' => ($list['createdBy'] == $user) ? true : false,
+				'lists' => $listsRepository->findAll($userId),
+				'userProducts' => $listsRepository->findUserProducts($id, $userId),
+				'linkedLists' => $listsRepository->findLinkedLists($userId),
+				'isOwner' => ($list['createdBy'] == $userId) ? true : false,
 			]
 		);
 	}
@@ -254,7 +256,8 @@ class ListsController implements ControllerProviderInterface {
 		$listsRepository = new ListsRepository($app['db']);
 		$list = $listsRepository->findOneById($id);
 
-		$user = $this->getUser($app);
+		$username = $this->getUsername($app);
+		$userId = $this->getUserId($app, $username);
 
 		if(!$list) {
 			$app['session']->getFlashBag()->add(
@@ -270,13 +273,13 @@ class ListsController implements ControllerProviderInterface {
 
 		$isLinked = false;
 
-		foreach ($listsRepository->findLinkedLists($user) as $linkedList) {
+		foreach ($listsRepository->findLinkedLists($userId) as $linkedList) {
 			if($linkedList['id'] == $id) {
 				$isLinked = true;
 			}
 		}
 
-		if($list['createdBy'] != $user and $isLinked == false){
+		if($list['createdBy'] != $userId and $isLinked == false){
 			$app['session']->getFlashBag()->add(
 				'messages',
 				[
@@ -287,7 +290,7 @@ class ListsController implements ControllerProviderInterface {
 
 			return $app->redirect($app['url_generator']->generate('lists_manager'));
 
-		} else if ($list['createdBy'] != $user and $isLinked == true) {
+		} else if ($list['createdBy'] != $userId and $isLinked == true) {
 
 			$listsRepository->deleteConnection($id);
 
@@ -330,7 +333,7 @@ class ListsController implements ControllerProviderInterface {
 			[
 				'deletedList' => $list,
 				'form' => $form->createView(),
-				'lists' => $listsRepository->findAll($user),
+				'lists' => $listsRepository->findAll($userId),
 			]
 		);
 	}
@@ -343,9 +346,10 @@ class ListsController implements ControllerProviderInterface {
 
 		$username = [];
 
-		$user = $this->getUser($app);
+		$user = $this->getUsername($app);
+		$userId = $this->getUserId($app, $user);
 
-		if(!$list || $list['createdBy'] != $user) {
+		if(!$list || $list['createdBy'] != $userId) {
 			$app['session']->getFlashBag()->add(
 				'messages',
 				[
@@ -377,7 +381,7 @@ class ListsController implements ControllerProviderInterface {
 		return $app['twig']->render(
 			'lists/share.html.twig',
 			[
-				'lists' => $listsRepository->findAll($user),
+				'lists' => $listsRepository->findAll($userId),
 				'form' => $form->createView(),
 				'editedList' => $list,
 			]
@@ -392,17 +396,18 @@ class ListsController implements ControllerProviderInterface {
 		$list = $listsRepository->findOneById($id);
 		$product = [];
 
-		$user = $this->getUser($app);
+		$username = $this->getUsername($app);
+		$userId = $this->getUserId($app, $username);
 
 		$isLinked = false;
 
-		foreach ($listsRepository->findLinkedLists($user) as $linkedList) {
+		foreach ($listsRepository->findLinkedLists($userId) as $linkedList) {
 			if($linkedList['id'] == $id) {
 				$isLinked = true;
 			}
 		}
 
-		if(!$list or ($list['createdBy'] != $user and $isLinked == false)) {
+		if(!$list or ($list['createdBy'] != $userId and $isLinked == false)) {
 			$app['session']->getFlashBag()->add(
 				'messages',
 				[
@@ -420,7 +425,7 @@ class ListsController implements ControllerProviderInterface {
 		if($form->isSubmitted() && $form->isValid()) {
 
 			$listsRepository->updateModiefiedDate($id);
-			$productsRepository->save($id, $form->getData(), $user);
+			$productsRepository->save($id, $form->getData(), $userId);
 
 			$app['session']->getFlashBag()->add(
 				'messages',
@@ -438,10 +443,31 @@ class ListsController implements ControllerProviderInterface {
 			[
 				'newProduct' => $product,
 				'form' => $form->createView(),
-				'lists' => $listsRepository->findAll($user),
+				'lists' => $listsRepository->findAll($userId),
 				'editedList' => $listsRepository->findOneById($id),
 				'displayIsBought'=> false,
 			]
 		);
+	}
+
+	private function getUsername(Application $app) {
+
+		$token = $app['security.token_storage']->getToken();
+
+		if(null !== $token) {
+			$user = $token->getUsername();
+		}
+
+		return $user;
+	}
+
+	private function getUserId(Application $app, $username) {
+
+		$userRepository = new UserRepository($app['db']);
+
+		$userId = $userRepository->getUserByLogin($username);
+
+		return $userId['id'];
+
 	}
 }

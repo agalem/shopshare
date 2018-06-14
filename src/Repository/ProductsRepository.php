@@ -49,6 +49,40 @@ class ProductsRepository {
 	}
 
 
+	public function findUserProductsIds($userId) {
+
+		$queryBuilder = $this->queryAll();
+		$queryBuilder->where('p.createdBy = :userId ')
+		             ->setParameter(':userId', $userId, \PDO::PARAM_INT);
+
+		return array_column($queryBuilder->execute()->fetchAll(), 'id');
+
+	}
+
+	public function findBoughtByUserProductsIds($userId) {
+
+		$queryBuilder = $this->queryAll();
+		$queryBuilder->where('p.createdBy != :userId')
+		             ->setParameter(':userId', $userId, \PDO::PARAM_INT);
+
+		return array_column($queryBuilder->execute()->fetchAll(), 'id');
+
+	}
+
+
+	public function getBoughtUser($productsIds) {
+
+		$queryBuilder = $this->db->createQueryBuilder();
+		$queryBuilder->select('pa.product_id', 'pa.modifiedBy', 'pa.quantity', 'pa.price', 'pa.message', 'p.name')
+					->from('products_actions', 'pa')
+					->innerJoin('pa', 'products', 'p', 'p.id = pa.product_id')
+					->where('pa.product_id IN (:ids)')
+					->setParameter(':ids', $productsIds, Connection::PARAM_INT_ARRAY);
+
+		return $queryBuilder->execute()->fetchAll();
+
+	}
+
 
 	public function save($listId, $product, $username)
 	{

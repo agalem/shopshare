@@ -41,16 +41,6 @@ class ProductsController implements ControllerProviderInterface {
 		return $controller;
 	}
 
-	public function getUser(Application $app) {
-		$token = $app['security.token_storage']->getToken();
-
-		if(null !== $token) {
-			$user = $token->getUsername();
-		}
-
-		return $user;
-	}
-
 
 	public function editAction(Application $app, $id, Request $request) {
 
@@ -60,7 +50,8 @@ class ProductsController implements ControllerProviderInterface {
 		$connectedList = $listsRepository->getConnectedList($id);
 		$listId = $connectedList['list_id'];
 
-		$user = $this->getUser($app);
+		$username = $this->getUsername($app);
+		$userId = $this->getUserId($app, $username);
 
 		if(!$product) {
 			$app['session']->getFlashBag()->add(
@@ -74,7 +65,7 @@ class ProductsController implements ControllerProviderInterface {
 			return $app->redirect($app['url_generator']->generate('list_edit', array('id' => $listId)));
 		}
 
-		if ($product['createdBy'] != $user) {
+		if ($product['createdBy'] != $userId) {
 			$app['session']->getFlashBag()->add(
 				'messages',
 				[
@@ -91,7 +82,7 @@ class ProductsController implements ControllerProviderInterface {
 
 		if($form->isSubmitted() && $form->isValid()){
 
-			$productsRepository->save($listId, $form->getData(), $user);
+			$productsRepository->save($listId, $form->getData(), $userId);
 
 			$app['session']->getFlashBag()->add(
 				'messages',
@@ -109,7 +100,7 @@ class ProductsController implements ControllerProviderInterface {
 			[
 				'editedProduct' => $product,
 				'form' => $form->createView(),
-				'lists' => $listsRepository->findAll($user),
+				'lists' => $listsRepository->findAll($userId),
 			]
 		);
 	}
@@ -234,6 +225,28 @@ class ProductsController implements ControllerProviderInterface {
 				'lists' => $listsRepository->findAll($user),
 			]
 		);
+	}
+
+
+	private function getUsername(Application $app) {
+
+		$token = $app['security.token_storage']->getToken();
+
+		if(null !== $token) {
+			$user = $token->getUsername();
+		}
+
+		return $user;
+	}
+
+	private function getUserId(Application $app, $username) {
+
+		$userRepository = new UserRepository($app['db']);
+
+		$userId = $userRepository->getUserByLogin($username);
+
+		return $userId['id'];
+
 	}
 
 }

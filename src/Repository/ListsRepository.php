@@ -15,10 +15,10 @@ class ListsRepository {
 		$this->userRepository = new UserRepository($db);
 	}
 
-	public function findAll($username) {
+	public function findAll($userId) {
 		$queryBuilder = $this->queryAll();
-		$queryBuilder->where('l.createdBy = :username')
-		             ->setParameter(':username', $username, \PDO::PARAM_STR);
+		$queryBuilder->where('l.createdBy = :userId')
+		             ->setParameter(':userId', $userId, \PDO::PARAM_INT);
 
 
 		return $queryBuilder->execute()->fetchAll();
@@ -35,37 +35,26 @@ class ListsRepository {
 		return $result;
 	}
 
-	public function findLinkedLists($username) {
+	public function findLinkedLists($userId) {
 
 		try {
-			$userId = $this->db->createQueryBuilder();
-			$userId->select('u.id', 'u.login')
-			       ->from('users', 'u')
-			       ->where('u.login = :username')
-			       ->setParameter(':username', $username, \PDO::PARAM_STR);
 
-			$userId = $userId->execute()->fetch();
-
-			$linkedLists = $this->db->createQueryBuilder();
-			$linkedLists->select('lu.id_list', 'lu.id_user')
+			$linkedListsIds = $this->db->createQueryBuilder();
+			$linkedListsIds->select('lu.list_id', 'lu.user_id')
 			            ->from('lists_users', 'lu')
-			            ->where('lu.id_user = :userId')
-			            ->setParameter(':userId', $userId['id'], \PDO::PARAM_INT);
+			            ->where('lu.user_id = :userId')
+			            ->setParameter(':userId', $userId, \PDO::PARAM_INT);
 
-			$linkedListsIds = array_column($linkedLists->execute()->fetchAll(), 'id_list');
+			$linkedListsIds = $linkedListsIds->execute()->fetchAll();
+
+			$linkedListsIds = array_column($linkedListsIds, 'list_id');
+
+			$linkedLists = $this->queryAll();
+			$linkedLists->where('l.id IN (:ids)')
+			            ->setParameter(':ids', $linkedListsIds, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
 
 
-			$queryBuilder = $this->queryAll();
-			$queryBuilder->where('l.id IN (:ids)')
-			             ->setParameter(':ids', $linkedListsIds, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
-			$result =  $queryBuilder->execute()->fetchAll();
-
-
-			if (!$result) {
-				return [];
-			} else {
-				return $result;
-			}
+			return $linkedLists->execute()->fetchAll();
 
 		} catch (DBALException $exception) {
 			throw $exception;
@@ -137,30 +126,30 @@ class ListsRepository {
 			: [];
 	}
 
-	public function findUserProducts($listId, $user) {
+	public function findUserProducts($listId, $userId) {
 		$productsIds = $this->findLinkedProductsIds($listId);
 
 		$queryBuilder = $this->db->createQueryBuilder();
 		$queryBuilder->select('p.id', 'p.name', 'p.value', 'p.quantity', 'p.isBought', 'p.createdBy', 'p.lastModifiedBy', 'p.createdAt')
 			->from('products', 'p')
-			->where('p.id IN (:ids) AND p.createdBy = :user')
-			->setParameter(':ids', $productsIds,  \Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
-			->setParameter(':user', $user, \PDO::PARAM_STR);
+			->where('p.id IN (:ids) AND p.createdBy = :userId')
+			->setParameter(':ids', array_column($productsIds, 'product_id'),  \Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
+			->setParameter(':userId', $userId, \PDO::PARAM_INT);
+
 
 		return $queryBuilder->execute()->fetchAll();
 
 	}
 
-	public function findOtherProducts($listId, $user) {
+	public function findOtherProducts($listId, $userId) {
 		$productsIds = $this->findLinkedProductsIds($listId);
 
 		$queryBuilder = $this->db->createQueryBuilder();
 		$queryBuilder->select('p.id', 'p.name', 'p.value', 'p.quantity', 'p.isBought', 'p.createdBy', 'p.lastModifiedBy', 'p.createdAt')
 		             ->from('products', 'p')
-		             ->where('p.id IN (:ids) AND p.createdBy NOT LIKE :user')
-		             ->setParameter(':ids', $productsIds,  \Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
-		             ->setParameter(':user', $user, \PDO::PARAM_STR);
-
+					->where('p.id IN (:ids) AND p.createdBy NOT LIKE :userId')
+					->setParameter(':ids', array_column($productsIds, 'product_id'), Connection::PARAM_INT_ARRAY)
+					->setParameter(':userId', $userId, \PDO::PARAM_INT);
 
 		return $queryBuilder->execute()->fetchAll();
 	}
@@ -186,27 +175,26 @@ class ListsRepository {
 			->setParameter(':listId', $listId, \PDO::PARAM_INT);
 		$result = $queryBuilder->execute()->fetchAll();
 
-		return isset($result) ? array_column($result, 'product_id') : [];
+
+		return isset($result) ? $result : [];
 	}
 
 
-	public function addUser($listId, $username) {
-
-       $user = $this->userRepository->getUserByLogin($username['user_login']);
+	public function addUser($listId, $userId) {
 
 		$ifConnectionExists = $this->db->createQueryBuilder();
-		$ifConnectionExists->select('lu.id_list', 'lu.id_user')
+		$ifConnectionExists->select('lu.list_id', 'lu.user_id')
 			->from('lists_users', 'lu')
-			->where('lu.id_list = :listId AND lu.id_user = :userId')
+			->where('lu.list_id = :listId AND lu.user_id = :userId')
 			->setParameter(':listId', $listId, \PDO::PARAM_INT)
-			->setParameter(':userId', $user['id'], \PDO::PARAM_INT);
+			->setParameter(':userId', $userId, \PDO::PARAM_INT);
 
 		$ifConnectionExists->execute()->fetch() ? $ifConnectionExists = true : $ifConnectionExists = false;
 
-		$newConnection['id_list'] = $listId;
-		$newConnection['id_user'] = $user['id'];
+		$newConnection['list_id'] = $listId;
+		$newConnection['user_id'] = $userId;
 
-		if(!$user or $ifConnectionExists == true) {
+		if(!$ifConnectionExists == true) {
 			return [];
 		} else {
 			$this->db->insert( 'lists_users', $newConnection );
@@ -223,7 +211,7 @@ class ListsRepository {
 			$productsIds = $this->findLinkedProductsIds($listId);
 
 			foreach ($productsIds as $productId) {
-				$this->db->delete('products_actions', ['id_product' => $productId]);
+				$this->db->delete('products_actions', ['product_id' => $productId]);
 			}
 
 			$this->db->delete('products_lists', ['list_id' => $listId]);

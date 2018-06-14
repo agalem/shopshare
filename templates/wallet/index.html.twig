@@ -1,0 +1,36 @@
+{% extends "base.html.twig" %}
+
+
+{% block title %}
+    Application
+{% endblock %}
+
+{% block main %}
+    <h4 class="modal-title text-monospace mb-3">{{ 'title.manage_lists'|trans }}</h4>
+    <div class="row">
+        <div class="col-lg-5 col-md-10 column mb-4">
+            <h2 class="h5 text-monospace">{{ 'title.your_wallet'|trans }}</h2>
+                <table>
+                    {% if forUser is defined and forUser|length %}
+                        <tbody>
+                            {% for element in forUser %}
+                                <tr>{{ element.name }} {{ element.price }} PLN</tr>
+                            {% endfor %}
+                        </tbody>
+                    {% endif %}
+                </table>
+            <br/> <br/>
+                <table>
+                    {% if byUser is defined and byUser|length %}
+                        <tbody>
+                            {% for element in byUser %}
+                                <tr>{{ element.name }} {{ element.price }} PLN</tr>
+                            {% endfor %}
+                        </tbody>
+                    {% endif %}
+                </table>
+        </div>
+    </div>
+
+
+{% endblock %}

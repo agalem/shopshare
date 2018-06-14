@@ -53,14 +53,15 @@ class UserRepository {
 		}
 	}
 
-	public function getUserByLogin($login) {
+	public function getUserByLogin($login)
+	{
 		try {
 			$queryBuilder = $this->db->createQueryBuilder();
-			$queryBuilder->select('u.id', 'u.login', 'ui.password', 'ui.role_id')
-				->from('users', 'u')
-				->innerJoin('u', 'users_info', 'ui', 'u.id = ui.id_user')
-				->where('u.login = :login')
-				->setParameter(':login', $login, \PDO::PARAM_STR);
+			$queryBuilder->select('u.id', 'u.login', 'u.password')
+			             ->from('users', 'u')
+			             ->where('u.login = :login')
+			             ->setParameter(':login', $login, \PDO::PARAM_STR);
+
 			return $queryBuilder->execute()->fetch();
 		} catch (DBALException $exception) {
 			return [];
@@ -80,51 +81,47 @@ class UserRepository {
 		}
 	}
 
-	public function getUserRoles($userId) {
+	public function getUserRoles($userId)
+	{
 		$roles = [];
 
 		try {
 			$queryBuilder = $this->db->createQueryBuilder();
 			$queryBuilder->select('r.name')
-			             ->from('users_info', 'ui')
-			             ->innerJoin('ui', 'users_roles', 'r', 'ui.role_id = r.id')
-			             ->where('ui.id_user = :id')
+			             ->from('users', 'u')
+			             ->innerJoin('u', 'users_roles', 'r', 'u.role_id = r.id')
+			             ->where('u.id = :id')
 			             ->setParameter(':id', $userId, \PDO::PARAM_INT);
 			$result = $queryBuilder->execute()->fetchAll();
 
-			if($result) {
+			if ($result) {
 				$roles = array_column($result, 'name');
 			}
+
 			return $roles;
 		} catch (DBALException $exception) {
 			return $roles;
 		}
 	}
 
-
 	public function save($user) {
 
-		if(isset($user['id']) && ctype_digit((string) $user['id'])) {
-			$id = $user['id'];
-			unset($user['id']);
+		try {
+			if(isset($user['id']) && ctype_digit((string) $user['id'])) {
+				$id = $user['id'];
+				unset($user['id']);
 
-			$this->db->beginTransaction();
+				$this->db->update('users', $user, ['id' => $id]);
 
-			$this->db->update('users', ["login" => $user['login']], ['id' => $id]);
-			$this->db->update('users_info', ["password" => $user['password'], "mail" => $user['mail']], ['id_user' => $id]);
+			} else {
 
-			$this->db->commit();
-		} else {
-			$this->db->beginTransaction();
-
-			$this->db->insert('users', ["login" => $user['login']]);
-			$userId = $this->db->lastInsertId();
-			$this->db->insert('users_info', ["id_user" => $userId, "password" => $user['password'], "mail" => $user['mail']]);
-
-			$this->db->commit();
-
-			$this->loadUserByLogin($user['login']);
+				$this->db->insert('users', $user);
+			}
+		} catch (DBALException $exception) {
+			return [];
 		}
+
+
 	}
 
 }

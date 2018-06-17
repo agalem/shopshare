@@ -14,6 +14,22 @@
                <source>label.nav.next</source>
                <target>następna strona</target>
             </trans-unit>
+            <trans-unit id="label.item">
+                <source>label.item</source>
+                <target>szt.</target>
+            </trans-unit>
+            <trans-unit id="label.no_user_lists">
+                <source>label.no_user_lists</source>
+                <target>Nie masz swoich list</target>
+            </trans-unit>
+            <trans-unit id="label.payed">
+                <source>label.payed</source>
+                <target>Zapłacone</target>
+            </trans-unit>
+            <trans-unit id="label.no_linked_lists">
+                <source>label.no_linked_lists</source>
+                <target>Nie masz współdzielonych list</target>
+            </trans-unit>
             <trans-unit id="action.save">
                 <source>action.save</source>
                 <target>Zapisz</target>
@@ -122,6 +138,22 @@
                 <source>label.quantity</source>
                 <target>Ilość*</target>
             </trans-unit>
+            <trans-unit id="label.yours_lists">
+                <source>label.yours_lists</source>
+                <target>Twoje listy</target>
+            </trans-unit>
+            <trans-unit id="label.linked_lists">
+                <source>label.linked_lists</source>
+                <target>Dzielone listy</target>
+            </trans-unit>
+            <trans-unit id="label.search_list">
+                <source>label.search_list</source>
+                <target>Szukaj listy</target>
+            </trans-unit>
+            <trans-unit id="label.search_products">
+                <source>label.search_products</source>
+                <target>Szukaj produktu</target>
+            </trans-unit>
             <trans-unit id="title.choose_list">
                 <source>title.choose_list</source>
                 <target>Wybierz listę</target>
@@ -133,6 +165,22 @@
             <trans-unit id="label.current_spendings">
                 <source>label.current_spendings</source>
                 <target>Dotychczas wydano :</target>
+            </trans-unit>
+            <trans-unit id="label.return">
+                <source>label.return</source>
+                <target>Powrót</target>
+            </trans-unit>
+            <trans-unit id="label.isItem">
+                <source>label.isItem</source>
+                <target>Sztuki czy kg?</target>
+            </trans-unit>
+            <trans-unit id="label.weight">
+                <source>label.weight</source>
+                <target>kg</target>
+            </trans-unit>
+            <trans-unit id="label.message">
+                <source>label.message</source>
+                <target>Wiadomość</target>
             </trans-unit>
             <trans-unit id="table.caption">
                 <source>table.caption</source>
@@ -150,6 +198,10 @@
                 <source>title.add_list</source>
                 <target>Utwórz nową listę</target>
             </trans-unit>
+            <trans-unit id="title.shared_width">
+                <source>title.shared_with</source>
+                <target>Dzielone z</target>
+            </trans-unit>
             <trans-unit id="text.list_is_empty">
                 <source>text.list_is_empty</source>
                 <target>Lista nie ma jeszcze produktów</target>
@@ -157,6 +209,10 @@
             <trans-unit id="text.no_user_products">
                 <source>text.no_user_products</source>
                 <target>Nie dodałeś swoich produktów do listy</target>
+            </trans-unit>
+            <trans-unit id="text.user_products">
+                <source>text.user_products</source>
+                <target>Twoje produkty</target>
             </trans-unit>
             <trans-unit id="auth.login.label">
                 <source>auth.login.label</source>
@@ -173,6 +229,10 @@
             <trans-unit id="title.hello">
                 <source>title.hello</source>
                 <target>Witaj</target>
+            </trans-unit>
+            <trans-unit id="title.wallet">
+                <source>title.wallet</source>
+                <target>Portfel</target>
             </trans-unit>
         </body>
     </file>

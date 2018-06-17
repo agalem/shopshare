@@ -18,14 +18,6 @@
                 {{ form_errors(form.name) }}
             </div>
         </div>
-        <br/>
-        <div>
-            {{ form_label(form.maxCost, 'label.max_cost'|trans) }}<br/>
-            <div class="form-input">
-                {{ form_widget(form.maxCost) }}
-                {{ form_errors(form.maxCost) }}
-            </div>
-        </div>
         <input type="submit" value="{{ 'action.save'|trans }}" class="btn btn-success custom-m-t" />
         {{ form_end(form) }}
     </div>
@@ -39,17 +31,40 @@
         {% if userProducts is defined and userProducts|length %}
             <caption>{{ 'table.caption'|trans({'%name%': editedList.name}) }}</caption>
             <tbody>
+            <p>{{ 'text.user_products'|trans }}</p>
             {% for product in userProducts %}
+
                 <tr>
                     <td class="custom-narrow"><span class="badge badge-primary badge-pill">{{ product.quantity }}</span></th>
                     <th scope="row" class="text-uppercase {% if product.isBought == true %} custom-bought {% endif %}">{{ product.name }}</th>
                     <td class="custom-pos_rel"><a href="{{ url('product_edit', {'id' : product.id}) }}" class="custom-btn_table custom-m-r"><button role="button" class="btn btn-warning">{{ 'label.edit'|trans }}</button></a></td>
-                    <td class="custom-pos_rel"><a href="{{ url('product_delete', {'id' : product.id }) }}" class="custom-btn_table"><button type="button" class="btn btn-danger">{{ 'action.delete'|trans }}</button></a></td>
+                    <td class="custom-pos_rel"><a href="{{ url('product_delete', {'id' : product.id }) }}" class="custom-btn_table custom-btn_table-danger"><button type="button" class="btn btn-danger">{{ 'action.delete'|trans }}</button></a></td>
                 </tr>
+
             {% endfor %}
             </tbody>
         {% else %}
             <p>{{ 'text.no_user_products'|trans }}</p>
         {% endif %}
     </table>
+
+    <div class="horizontal-line"></div>
+
+
+    {% if isOwner == true %}
+    <a href="{{ url('list_share', {'id' : editedList.id}) }}" class="btn btn-info text-light mb-4">{{ 'label.share'|trans }}</a>
+    {% endif %}
+
+    {% if isShared == true %}
+        <p>{{ 'label.shared_with'|trans }}:</p>
+        <ol>
+            {% for user in sharedUsers %}
+                <li>{{ user }}</li>
+            {% endfor %}
+        </ol>
+
+    {% else %}
+        <p>{{ 'label.no_shared'|trans }}</p>
+    {% endif %}
+
 {% endblock %}

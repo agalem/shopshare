@@ -6,61 +6,80 @@
 {% endblock %}
 
 {% block main %}
-    <h4 class="modal-title text-monospace mb-3">{{ activeList.name }}</h4>
-    <div class="row">
-        <div class="col-lg-5 col-md-10 column mb-4">
-            <h5 class="h5 text-monospace">Twoje produkty:</h5>
+    <h4 class="modal-title text-monospace mb-3">{{ activeList.name }} {% if isLinked == true %}<span class="fa fa-users"></span> {% endif %}</h4>
+
+            <input onchange="searchProducts();" class="form-control" type="search" id="products" placeholder="{{ 'label.search_products'|trans }}">
+
             {% if userProducts is defined and userProducts|length %}
                 <table class="table table-hover">
                     <!--<caption>{{ 'title.manage_lists'|trans }}</caption>-->
                     <tbody>
                     {% for product in userProducts %}
-                        <tr>
-                            <td class="custom-narrow"><span class="badge badge-primary badge-pill">{{ product.quantity }}</span></th>
-                            <th scope="row" class="text-uppercase {% if product.isBought == true %} custom-bought {% endif %}">{{ product.name }}
-                                <p style="display:none;">
-                                Added by: {{ product.createdBy }}
-                                </p>
-                                <p style="display:none;">
-                                    Added at: {{ product.createdAt }}
-                                </p>
-                            </th>
-                            {% if product.isBought == false %}
-                                <td class="custom-pos_rel"><a href="{{ url('product_buy', {'id': product.id}) }}"><button type="button" class="btn btn-success custom-btn_table">{{ 'label.bought'|trans }}</button></a></td>
+                        <div onclick="handlePopover();" data-name="row" class="row" id="{{ product.id }}">
+                            <div  class="custom-narrow"> <span class="badge badge-primary badge-pill">{{ product.quantity - product.currentQuantity }}</span><span> {% if product.isItem == true %} {{ 'label.item'|trans }} {% else %} {{ 'label.weight'|trans }} {% endif %}</span></div>
+                            <div data-name="product" class="text-dark {% if product.quantity - product.currentQuantity <= 0  %} custom-bought {% endif %}">{{ product.name }}</div>
+                            {% if product.quantity - product.currentQuantity <= 0 %}
+                                <div class="custom-btn_table"><a href="{{ url('product_buy', {'id': product.id}) }}"><button type="button" class="btn btn-success">{{ 'label.bought'|trans }}</button></a></div>
                             {% endif %}
-                        </tr>
+                            <span data-name="{{ product.id }}" class="fa fa-angle-down text-info custom-icon-pos"></span>
+                        </div>
+                        <div class="row-add " data-name="{{ product.id }}">
+                            <span>Added by: </span><span>{{ product.login }}</span><br/>
+                            <span>Added at: </span><span>{{ product.createdAt }}</span><br/>
+                            <span>Last modified: </span><span>{{ product.modifiedAt }}</span><br/>
+                            <span>Message: </span><span>{{ product.message }}</span>
+                        </div>
                     {% endfor %}
                     </tbody>
                 </table>
             {% else %}
-                <p>{{ 'text.list_is_empty'|trans }}</p>
+                <p>{{ 'text.no_user_products'|trans }}</p>
             {% endif %}
 
-        </div>
 
-        <span style="width: 30px;"></span>
-
-        <div class="col-lg-5 col-md-10 column">
 
             {% if otherProducts is defined and otherProducts|length %}
-                <h5 class="h5 text-monospace">Pozostałe produkty:</h5>
 
                 <table class="table table-hover">
                     <!--<caption>{{ 'title.manage_lists'|trans }}</caption>-->
                     <tbody>
                     {% for product in otherProducts %}
-                        <tr>
-                            <td class="custom-narrow"><span class="badge badge-primary badge-pill">{{ product.quantity }}</span></th>
-                            <th scope="row" class="text-uppercase {% if product.isBought == true %} custom-bought {% endif %}">{{ product.name }}</th>
-                            {% if product.isBought == false %}
-                                <td class="custom-pos_rel"><a href="{{ url('product_buy', {'id': product.id}) }}"><button type="button" class="btn btn-success custom-btn_table">{{ 'label.bought'|trans }}</button></a></td>
+                        <div onclick="handlePopover();" data-name="row" class="row" id="{{ product.id }}">
+                            <div  class="custom-narrow"><span class="fa fa-user mr-1"></span> <span class="badge badge-primary badge-pill">{{ product.quantity - product.currentQuantity }}</span><span> {% if product.isItem == true %} {{ 'label.item'|trans }} {% else %} {{ 'label.weight'|trans }} {% endif %}</span></div>
+                            <div data-name="product" class="text-dark  {% if product.quantity - product.currentQuantity <= 0  %} custom-bought {% endif %}">{{ product.name }}</div>
+                            {% if product.quantity - product.currentQuantity > 0 %}
+                                <div class="custom-btn_table"><a href="{{ url('product_buy', {'id': product.id}) }}"><button type="button" class="btn btn-success">{{ 'label.bought'|trans }}</button></a></div>
                             {% endif %}
-                        </tr>
+                            <span data-name="{{ product.id }}" class="fa fa-angle-down text-info custom-icon-pos"></span>
+                        </div>
+                        <div class="row-add " data-name="{{ product.id }}">
+                            <span>Added by: </span><span>{{ product.login }}</span><br/>
+                            <span>Added at: </span><span>{{ product.createdAt }}</span><br/>
+                            <span>Last modified: </span><span>{{ product.modifiedAt }}</span><br/>
+                            <span>Message: </span><span>{{ product.message }}</span>
+                        </div>
                     {% endfor %}
                     </tbody>
                 </table>
             {% endif %}
 
-        </div>
-    </div>
+{% endblock %}
+
+{% block managePanel %}
+    <a href="{{ url('product_add', {'id': activeList.id}) }}" title="{{ 'label.add_element'|trans }}" class="text-light"> <span class="fa fa-plus text-warning" ></span> {{ 'label.add_element'|trans }}</a>
+
+    {% if isLinked == true %}
+        <p class="text-light mt-4 mb-3">{{ 'title.shared_with'|trans }}:</p>
+             <ol class="text-light">
+                {% if listOwner is defined and listOwner|length %}
+                    <li>{{ listOwner.login }} <span class="fa fa-user-ninja"></span> </li>
+                {% endif %}
+                 {% if sharedUsers is defined and sharedUsers|length %}
+                    {% for user in sharedUsers %}
+                        <li>{{ user }}</li>
+                    {% endfor %}
+                 {% endif %}
+            </ol>
+
+    {% endif %}
 {% endblock %}

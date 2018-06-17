@@ -130,8 +130,9 @@ class ListsRepository {
 		$productsIds = $this->findLinkedProductsIds($listId);
 
 		$queryBuilder = $this->db->createQueryBuilder();
-		$queryBuilder->select('p.id', 'p.name', 'p.value', 'p.quantity', 'p.isBought', 'p.createdBy', 'p.lastModifiedBy', 'p.createdAt')
+		$queryBuilder->select('p.id', 'p.name', 'p.value', 'p.quantity', 'p.isBought','p.isItem', 'p.createdBy', 'p.lastModifiedBy', 'p.createdAt', 'p.modifiedAt', 'p.message', 'u.login', 'p.currentQuantity')
 			->from('products', 'p')
+			->innerJoin('p', 'users', 'u', 'p.createdBy = u.id')
 			->where('p.id IN (:ids) AND p.createdBy = :userId')
 			->setParameter(':ids', array_column($productsIds, 'product_id'),  \Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
 			->setParameter(':userId', $userId, \PDO::PARAM_INT);
@@ -145,8 +146,9 @@ class ListsRepository {
 		$productsIds = $this->findLinkedProductsIds($listId);
 
 		$queryBuilder = $this->db->createQueryBuilder();
-		$queryBuilder->select('p.id', 'p.name', 'p.value', 'p.quantity', 'p.isBought', 'p.createdBy', 'p.lastModifiedBy', 'p.createdAt')
+		$queryBuilder->select('p.id', 'p.name', 'p.value', 'p.quantity', 'p.isBought','p.isItem', 'p.createdBy', 'p.lastModifiedBy', 'p.createdAt', 'p.modifiedAt', 'p.message' , 'u.login', 'p.currentQuantity')
 		             ->from('products', 'p')
+					->innerJoin('p', 'users', 'u', 'p.createdBy = u.id')
 					->where('p.id IN (:ids) AND p.createdBy NOT LIKE :userId')
 					->setParameter(':ids', array_column($productsIds, 'product_id'), Connection::PARAM_INT_ARRAY)
 					->setParameter(':userId', $userId, \PDO::PARAM_INT);
@@ -163,8 +165,64 @@ class ListsRepository {
 		             ->where('pl.product_id = :productId')
 		             ->setParameter(':productId', $productId);
 
-		$result = $queryBuilder->execute()->fetch();
+		$result = $queryBuilder->execute()->fetchAll();
 		return $result;
+	}
+
+	public function getSharedUsers($listId, $username) {
+
+		$queryBuilder = $this->db->createQueryBuilder();
+
+		$queryBuilder->select('lu.list_id', 'lu.user_id', 'u.login')
+			->from('lists_users', 'lu')
+			->innerJoin('lu', 'users', 'u', 'lu.user_id = u.id')
+			->where('lu.list_id = :listId AND u.login != :username' )
+			->setParameter(':listId', $listId, \PDO::PARAM_INT)
+			->setParameter(':username', $username, \PDO::PARAM_STR);
+
+		return array_column($queryBuilder->execute()->fetchAll(), 'login');
+
+	}
+
+	public function checkIfAdmin($username) {
+
+		$queryBuilder = $this->db->createQueryBuilder();
+		$queryBuilder->select('u.role_id', 'r.name')
+						->from('users', 'u')
+						->innerJoin('u', 'users_roles', 'r', 'r.id = u.role_id')
+						->where('u.login = :login')
+						->setParameter(':login', $username, \PDO::PARAM_STR);
+
+
+		return $queryBuilder->execute()->fetch();
+
+	}
+
+	public function checkIfOnList($listId, $username) {
+
+		$queryBuilder = $this->db->createQueryBuilder();
+		$queryBuilder->select('lu.list_id', 'lu.user_id', 'u.login')
+					->from('lists_users', 'lu')
+					->innerJoin('lu', 'users', 'u', 'lu.user_id = u.id')
+					->where('lu.list_id = :listId AND u.login = :username')
+					->setParameter(':listId', $listId, \PDO::PARAM_INT)
+					->setParameter(':username', $username, \PDO::PARAM_STR);
+
+		return $queryBuilder->execute()->fetch();
+
+	}
+
+	public function getListOwner($listId) {
+
+		$queryBuilder = $this->db->createQueryBuilder();
+		$queryBuilder->select('l.id', 'l.createdBy', 'u.login')
+			->from('lists', 'l')
+			->innerJoin('l', 'users', 'u', 'l.createdBy = u.id')
+			->where('l.id = :listId')
+			->setParameter(':listId', $listId, \PDO::PARAM_INT );
+
+		return $queryBuilder->execute()->fetch();
+
 	}
 
 	protected function findLinkedProductsIds($listId) {

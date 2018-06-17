@@ -68,6 +68,7 @@ class UserRepository {
 		}
 	}
 
+
 	public function checkIfExists($login) {
 		try {
 			$queryBuilder = $this->db->createQueryBuilder();

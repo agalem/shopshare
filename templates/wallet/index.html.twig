@@ -6,17 +6,28 @@
 {% endblock %}
 
 {% block main %}
-    <h4 class="modal-title text-monospace mb-3">{{ 'title.manage_lists'|trans }}</h4>
-    <div class="row">
+    <h2 class="h5 text-monospace mb-3">{{ 'title.wallet'|trans }} <span class="fa fa-wallet"></span> </h2>
+
         <div class="col-lg-5 col-md-10 column mb-4">
-            <h2 class="h5 text-monospace">{{ 'title.your_wallet'|trans }}</h2>
+
                 <table>
                     {% if forUser is defined and forUser|length %}
                         <tbody>
                             {% for element in forUser %}
-                                <tr>{{ element.name }} {{ element.price }} PLN</tr>
+                                <div onclick="handlePopover();" data-name="row" class="row" id="{{ element.id }}">
+                                    <div data-name="product" class="text-dark text-monospace">{{ element.login }}</div>
+                                    <div class="text-success text-monospace text-large pl-4">+{{ element.price }}</div>
+                                    <div class="custom-btn_table"><a href="{{ url('payment_delete', {'id': element.id}) }}"><button type="button" class="btn btn-success">{{ 'label.payed'|trans }}</button></a></div>
+
+                                    <span data-name="{{ element.id }}" class="fa fa-angle-down text-info custom-icon-pos"></span>
+                                </div>
+                                <div class="row-add " data-name="{{ element.id }}">
+                                    <span>Product: </span><span>{{ element.name }}</span><br/>
+                                    <span>Message: </span><span>{{ element.message }}</span>
+                                </div>
                             {% endfor %}
                         </tbody>
+
                     {% endif %}
                 </table>
             <br/> <br/>
@@ -24,13 +35,41 @@
                     {% if byUser is defined and byUser|length %}
                         <tbody>
                             {% for element in byUser %}
-                                <tr>{{ element.name }} {{ element.price }} PLN</tr>
+                                <div onclick="handlePopover();" data-name="row" class="row" id="{{ element.id }}">
+                                    <div data-name="product" class="text-dark text-monospace">{{ element.login }}</div>
+                                    <div class="text-danger text-monospace text-large pl-4">-{{ element.price }}</div>
+
+                                    <span data-name="{{ element.id }}" class="fa fa-angle-down text-info custom-icon-pos"></span>
+                                </div>
+                                <div class="row-add " data-name="{{ element.id }}">
+                                    <span>Product: </span><span>{{ element.name }}</span><br/>
+                                    <span>Message: </span><span>{{ element.message }}</span>
+                                </div>
                             {% endfor %}
                         </tbody>
                     {% endif %}
                 </table>
+            <br/><br/>
+            <table>
+                {% if byUserForUser is defined and byUserForUser|length %}
+                    <tbody>
+                    {% for element in byUserForUser %}
+                        <div onclick="handlePopover();" data-name="row" class="row" id="{{ element.id }}">
+                            <div data-name="product" class="text-dark text-monospace">{{ element.name }}</div>
+                            <div class="text-dark text-monospace text-large pl-4">{{ element.price }}</div>
+
+                            <span data-name="{{ element.id }}" class="fa fa-angle-down text-info custom-icon-pos"></span>
+                        </div>
+                        <div class="row-add " data-name="{{ element.id }}">
+                            <span>Product: </span><span>{{ element.name }}</span><br/>
+                            <span>Message: </span><span>{{ element.message }}</span>
+                        </div>
+                    {% endfor %}
+                    </tbody>
+                {% endif %}
+            </table>
         </div>
-    </div>
+
 
 
 {% endblock %}

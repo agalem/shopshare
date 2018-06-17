@@ -12,6 +12,7 @@ use Form\ProductType;
 use Form\ListType;
 use Repository\ProductsRepository;
 use Repository\ListsRepository;
+use Repository\UserRepository;
 use Silex\Application;
 use Silex\Api\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -111,20 +112,22 @@ class ProductsController implements ControllerProviderInterface {
 		$listsRepository = new ListsRepository($app['db']);
 		$product = $productsRepository->findOneById($id);
 		$connectedList = $listsRepository->getConnectedList($id);
-		$listId = $connectedList['list_id'];
+		$listId = $connectedList[0]['list_id'];
 		$listOwner = $listsRepository->findOneById($listId);
 
-		$user = $this->getUser($app);
+		$username = $this->getUsername($app);
+		$userId = $this->getUserId($app, $username);
 
 		$isLinked = false;
 
-		foreach ($listsRepository->findLinkedLists($user) as $linkedList) {
+		foreach ($listsRepository->findLinkedLists($userId) as $linkedList) {
 			if($linkedList['id'] == $listId) {
 				$isLinked = true;
 			}
 		}
 
-		if(!$product or ($listOwner['createdBy'] != $user and $isLinked == false)) {
+
+		if(!$product or ($listOwner['createdBy'] != $userId and $isLinked == false)) {
 			$app['session']->getFlashBag()->add(
 				'messages',
 				[
@@ -140,7 +143,8 @@ class ProductsController implements ControllerProviderInterface {
 		$form->handleRequest($request);
 
 		if($form->isSubmitted() && $form->isValid()){
-			$productsRepository->buy($form->getData(), $user);
+
+			$productsRepository->buy($form->getData(), $userId);
 
 
 			$app['session']->getFlashBag()->add(
@@ -159,7 +163,7 @@ class ProductsController implements ControllerProviderInterface {
 			[
 				'editedProduct' => $product,
 				'form' => $form->createView(),
-				'lists' => $listsRepository->findAll($user),
+				'lists' => $listsRepository->findAll($userId),
 				'previousList' => $listId,
 				'isBuyingForm' => true,
 			]

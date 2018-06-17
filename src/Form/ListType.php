@@ -22,15 +22,7 @@ class ListType extends AbstractType {
 				],
 			]
 		);
-		$builder->add(
-			'maxCost',
-			NumberType::class,
-			[
-				'label' => 'label.max_cost',
-				'required' => false,
-				'scale' => 1,
-			]
-		);
+
 
 	}
 

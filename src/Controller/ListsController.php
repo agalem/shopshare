@@ -66,8 +66,9 @@ class ListsController implements ControllerProviderInterface {
 
 		$userRole = $userRepository->getUserRoles($userId)[0];
 
+
 		if($userRole == 'ROLE_ADMIN') {
-			return $app->redirect($app['url_generator']->generate('lists_manager'));
+			return $app->redirect($app['url_generator']->generate('admin_manager'));
 		}
 
 
@@ -140,6 +141,9 @@ class ListsController implements ControllerProviderInterface {
 				'spendPercent' => $spendPercent,
 				'progressBarClass' => $progressBarClass,
 				'linkedLists' => $listsRepository->findLinkedLists($userId),
+				'isLinked' => $isLinked,
+				'listOwner' => $listsRepository->getListOwner($id),
+				'sharedUsers' => $listsRepository->getSharedUsers($id, $username),
 			]
 		);
 	}
@@ -149,6 +153,8 @@ class ListsController implements ControllerProviderInterface {
 
 		$username = $this->getUsername($app);
 		$userId = $this->getUserId($app, $username);
+
+
 
 		return $app['twig']->render(
 			'lists/manager.html.twig',
@@ -161,6 +167,7 @@ class ListsController implements ControllerProviderInterface {
 
 	public function addAction(Application $app, Request $request) {
 		$listsRepository = new ListsRepository($app['db']);
+		$userRepository = new UserRepository($app['db']);
 
 		$list = [];
 
@@ -169,6 +176,13 @@ class ListsController implements ControllerProviderInterface {
 
 		$username = $this->getUsername($app);
 		$userId = $this->getUserId($app, $username);
+
+		$userRole = $userRepository->getUserRoles($userId)[0];
+
+
+		if($userRole == 'ROLE_ADMIN') {
+			return $app->redirect($app['url_generator']->generate('admin_manager'));
+		}
 
 		if($form->isSubmitted() && $form->isValid()) {
 			$newList = $form->getData();
@@ -194,6 +208,7 @@ class ListsController implements ControllerProviderInterface {
 				'newList' => $list,
 				'form' => $form->createView(),
 				'lists' => $listsRepository->findAll($userId),
+				'linkedLists' => $listsRepository->findLinkedLists($userId),
 			]
 		);
 	}
@@ -205,7 +220,12 @@ class ListsController implements ControllerProviderInterface {
 		$username = $this->getUsername($app);
 		$userId = $this->getUserId($app, $username);
 
+
+		$sharedUsers = $listsRepository->getSharedUsers($id, $username);
+
 		$isLinked = false;
+
+		dump($list['createdBy'] == $userId);
 
 		foreach ($listsRepository->findLinkedLists($userId) as $linkedList) {
 			if($linkedList['id'] == $id) {
@@ -247,6 +267,8 @@ class ListsController implements ControllerProviderInterface {
 				'userProducts' => $listsRepository->findUserProducts($id, $userId),
 				'linkedLists' => $listsRepository->findLinkedLists($userId),
 				'isOwner' => ($list['createdBy'] == $userId) ? true : false,
+				'isShared' => (count($sharedUsers) == 0) ? false : true,
+				'sharedUsers' => $sharedUsers,
 			]
 		);
 	}
@@ -334,6 +356,7 @@ class ListsController implements ControllerProviderInterface {
 				'deletedList' => $list,
 				'form' => $form->createView(),
 				'lists' => $listsRepository->findAll($userId),
+				'linkedLists' => $listsRepository->findLinkedLists($userId),
 			]
 		);
 	}
@@ -348,6 +371,8 @@ class ListsController implements ControllerProviderInterface {
 
 		$user = $this->getUsername($app);
 		$userId = $this->getUserId($app, $user);
+
+
 
 		if(!$list || $list['createdBy'] != $userId) {
 			$app['session']->getFlashBag()->add(
@@ -364,6 +389,58 @@ class ListsController implements ControllerProviderInterface {
 		$form->handleRequest($request);
 
 		if($form->isSubmitted() && $form->isValid()) {
+
+
+			$data = $form->getData();
+
+			$userRole = $listsRepository->checkIfAdmin($data['user_login']);
+			$userRole = $userRole['name'];
+
+			$isOnList = $listsRepository->checkIfOnList($id, $data['user_login']);
+			$isOnList = count($isOnList) > 0 ? true : false;
+
+
+			if($user == $data['user_login']) {
+
+				$app['session']->getFlashBag()->add(
+					'messages',
+					[
+						'type' => 'warning',
+						'message' => 'message.cannot_share_yourself',
+					]
+				);
+
+				return $app->redirect($app['url_generator']->generate('list_share', array('id' => $id)), 301);
+
+			}
+
+			if($userRole == 'ROLE_ADMIN') {
+
+				$app['session']->getFlashBag()->add(
+					'messages',
+					[
+						'type' => 'warning',
+						'message' => 'message.cannot_add_admin',
+					]
+				);
+
+				return $app->redirect($app['url_generator']->generate('list_share', array('id' => $id)), 301);
+
+			}
+
+			if ($isOnList == true) {
+
+				$app['session']->getFlashBag()->add(
+					'messages',
+					[
+						'type' => 'warning',
+						'message' => 'message.already_on_list',
+					]
+				);
+
+				return $app->redirect($app['url_generator']->generate('list_share', array('id' => $id)), 301);
+
+			}
 
 			$listsRepository->addUser($id, $form->getData());
 
@@ -382,8 +459,10 @@ class ListsController implements ControllerProviderInterface {
 			'lists/share.html.twig',
 			[
 				'lists' => $listsRepository->findAll($userId),
+				'linkedLists' => $listsRepository->findLinkedLists($userId),
 				'form' => $form->createView(),
 				'editedList' => $list,
+				'sharedUsers' => $listsRepository->getSharedUsers($id, $user),
 			]
 		);
 	}
@@ -435,7 +514,7 @@ class ListsController implements ControllerProviderInterface {
 				]
 			);
 
-			return $app->redirect($app['url_generator']->generate('list_edit', array('id' => $id)), 301);
+			return $app->redirect($app['url_generator']->generate('lists_view', array('id' => $id)), 301);
 		}
 
 		return $app['twig']->render(
@@ -444,6 +523,7 @@ class ListsController implements ControllerProviderInterface {
 				'newProduct' => $product,
 				'form' => $form->createView(),
 				'lists' => $listsRepository->findAll($userId),
+				'linkedLists' => $listsRepository->findLinkedLists($userId),
 				'editedList' => $listsRepository->findOneById($id),
 				'displayIsBought'=> false,
 			]

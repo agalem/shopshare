@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}
+    Application
+{% endblock %}
+
+{% block main %}
+    <h2 class="h5 modal-title text-monospace custom-m-b">Czy otrzymałaś/eś płatność <b>{{ deletedPayment.price }}</b> PLN za <b>{{ deletedPayment.name }}</b>?</h2>
+    <div class="form-group">
+        {{ form_start(form, { method: 'post', action: url('payment_delete', {'id': deletedPayment.id}) }) }}
+        {{ form_widget(form) }}
+        <input type="submit" value="{{ 'label.yes'|trans }}" class="btn btn-success" />
+        {{ form_end(form) }}
+    </div>
+    <br/><br/>
+    <a href="{{ url('user_wallet') }}" class="btn btn-info text-light">{{ 'label.return'|trans }}</a>
+{% endblock %}

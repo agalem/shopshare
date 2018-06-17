@@ -14,6 +14,14 @@
                 <source>label.nav.next</source>
                 <target>next page</target>
             </trans-unit>
+            <trans-unit id="label.item">
+                <source>label.item</source>
+                <target>items</target>
+            </trans-unit>
+            <trans-unit id="label.weight">
+                <source>label.weight</source>
+                <target>kg</target>
+            </trans-unit>
             <trans-unit id="action.save">
                 <source>action.save</source>
                 <target>Save</target>
@@ -130,6 +138,46 @@
                 <source>label.current_spendings</source>
                 <target>Current spendings :</target>
             </trans-unit>
+            <trans-unit id="label.yours_lists">
+                <source>label.yours_lists</source>
+                <target>Yours lists :</target>
+            </trans-unit>
+            <trans-unit id="label.linked_lists">
+                <source>label.linked_lists</source>
+                <target>Shared lists</target>
+            </trans-unit>
+            <trans-unit id="label.search_list">
+                <source>label.search_list</source>
+                <target>Search list</target>
+            </trans-unit>
+            <trans-unit id="label.search_products">
+                <source>label.search_products</source>
+                <target>Search products</target>
+            </trans-unit>
+            <trans-unit id="label.return">
+                <source>label.return</source>
+                <target>Return</target>
+            </trans-unit>
+            <trans-unit id="label.isItem">
+                <source>label.isItem</source>
+                <target>Item or kg?</target>
+            </trans-unit>
+            <trans-unit id="label.no_user_lists">
+                <source>label.no_user_lists</source>
+                <target>You have no lists</target>
+            </trans-unit>
+            <trans-unit id="label.no_linked_lists">
+                <source>label.no_linked_lists</source>
+                <target>You have no shared lists</target>
+            </trans-unit>
+            <trans-unit id="label.message">
+                <source>label.message</source>
+                <target>Message</target>
+            </trans-unit>
+            <trans-unit id="label.payed">
+                <source>label.payed</source>
+                <target>Payed</target>
+            </trans-unit>
             <trans-unit id="title.choose_list">
                 <source>title.choose_list</source>
                 <target>Choose a list</target>
@@ -150,13 +198,25 @@
                 <source>title.add_list</source>
                 <target>Create new list</target>
             </trans-unit>
+            <trans-unit id="title.wallet">
+                <source>title.wallet</source>
+                <target>Wallet</target>
+            </trans-unit>
             <trans-unit id="text.list_is_empty">
                 <source>text.list_is_empty</source>
                 <target>There is no products in the list</target>
             </trans-unit>
+            <trans-unit id="title.shared_width">
+                <source>title.shared_with</source>
+                <target>Shared with</target>
+            </trans-unit>
             <trans-unit id="text.no_user_products">
                 <source>text.no_user_products</source>
                 <target>There is no your products in the list</target>
+            </trans-unit>
+            <trans-unit id="text.user_products">
+                <source>text.user_products</source>
+                <target>Your products</target>
             </trans-unit>
             <trans-unit id="auth.login.label">
                 <source>auth.login.label</source>

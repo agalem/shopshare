@@ -20,4 +20,18 @@
     {{ form_end(form) }}
 </div>
 
+    <div class="horizontal-line"></div>
+
+    {% if sharedUsers is defined and sharedUsers|length %}
+        <p>{{ 'label.shared_with'|trans }}:</p>
+        <ol>
+            {% for user in sharedUsers %}
+                <li>{{ user }}</li>
+            {% endfor %}
+        </ol>
+
+    {% else %}
+        <p>{{ 'label.no_shared'|trans }}</p>
+    {% endif %}
+
 {% endblock %}

@@ -59,7 +59,7 @@ class ProductsRepository {
 
 	}
 
-	public function findBoughtByUserProductsIds($userId) {
+	public function findBoughtForUserProductsIds($userId) {
 
 		$queryBuilder = $this->queryAll();
 		$queryBuilder->where('p.createdBy != :userId')
@@ -70,19 +70,95 @@ class ProductsRepository {
 	}
 
 
-	public function getBoughtUser($productsIds) {
+	public function getBoughtByUser($productsIds, $userId) {
 
 		$queryBuilder = $this->db->createQueryBuilder();
-		$queryBuilder->select('pa.product_id', 'pa.modifiedBy', 'pa.quantity', 'pa.price', 'pa.message', 'p.name')
+		$queryBuilder->select('pa.product_id', 'pa.modifiedBy', 'pa.quantity', 'pa.price', 'pa.message', 'p.name', 'u.login', 'pa.id')
 					->from('products_actions', 'pa')
 					->innerJoin('pa', 'products', 'p', 'p.id = pa.product_id')
-					->where('pa.product_id IN (:ids)')
-					->setParameter(':ids', $productsIds, Connection::PARAM_INT_ARRAY);
+					->innerJoin('pa', 'users', 'u', 'u.id = pa.modifiedBy')
+					->where('pa.product_id IN (:ids) AND pa.modifiedBy != :userId')
+					->setParameter(':ids', $productsIds, Connection::PARAM_INT_ARRAY)
+					->setParameter(':userId', $userId, \PDO::PARAM_INT);
 
 		return $queryBuilder->execute()->fetchAll();
 
 	}
 
+
+	public function getBoughtForUser($productsIds, $userId) {
+
+		$queryBuilder = $this->db->createQueryBuilder();
+		$queryBuilder->select('pa.product_id', 'pa.modifiedBy', 'pa.quantity', 'pa.price', 'pa.message', 'p.name', 'p.createdBy','u.login', 'pa.id')
+					->from('products_actions', 'pa')
+					->innerJoin('pa', 'products', 'p', 'p.id = pa.product_id')
+					->innerJoin('p', 'users', 'u', 'u.id = p.createdBy')
+					->where('pa.product_id IN (:ids) AND p.createdBy != :userId AND pa.modifiedBy = :userId')
+					->setParameter(':ids', $productsIds, Connection::PARAM_INT_ARRAY)
+					->setParameter(':userId', $userId, \PDO::PARAM_INT);
+
+		return $queryBuilder->execute()->fetchAll();
+
+	}
+
+
+
+	public function getBoughtByUserForUser($productsIds, $userId) {
+
+		$queryBuilder = $this->db->createQueryBuilder();
+		$queryBuilder->select('pa.product_id', 'pa.modifiedBy', 'pa.quantity', 'pa.price', 'pa.message', 'p.name', 'u.login', 'pa.id')
+		             ->from('products_actions', 'pa')
+		             ->innerJoin('pa', 'products', 'p', 'p.id = pa.product_id')
+		             ->innerJoin('pa', 'users', 'u', 'u.id = pa.modifiedBy')
+		             ->where('pa.product_id IN (:ids) AND pa.modifiedBy = :userId')
+		             ->setParameter(':ids', $productsIds, Connection::PARAM_INT_ARRAY)
+		             ->setParameter(':userId', $userId, \PDO::PARAM_INT);
+
+
+		return $queryBuilder->execute()->fetchAll();
+
+	}
+
+	public function isUserAction($id, $userId) {
+
+		$queryBuilder = $this->db->createQueryBuilder();
+		$queryBuilder->select('pa.product_id', 'pa.modifiedBy')
+					->from('products_actions', 'pa')
+					->where('pa.id = :id AND pa.modifiedBy = :userId')
+					->setParameter(':id', $id, \PDO::PARAM_INT)
+					->setParameter(':userId', $userId, \PDO::PARAM_INT);
+
+		$result = $queryBuilder->execute()->fetch();
+
+		return $result ? true : false;
+	}
+
+	public function findPaymentById($id) {
+
+		$queryBuilder = $this->db->createQueryBuilder();
+		$queryBuilder->select('pa.id', 'pa.product_id', 'pa.modifiedBy', 'pa.quantity', 'pa.price', 'pa.message', 'p.name', 'u.login')
+					->from('products_actions', 'pa')
+					->innerJoin('pa', 'products', 'p', 'pa.product_id = p.id')
+					->innerJoin('pa', 'users', 'u', 'pa.modifiedBy = u.id')
+					->where('pa.id = :id')
+					->setParameter(':id', $id, \PDO::PARAM_INT);
+
+		return $queryBuilder->execute()->fetch();
+
+	}
+
+
+	public function deletePayment($id) {
+
+		try {
+
+			$this->db->delete('products_actions', ['id' => $id]);
+
+		} catch (DBALException $exception) {
+			return [];
+		}
+
+	}
 
 	public function save($listId, $product, $username)
 	{
@@ -132,31 +208,35 @@ class ProductsRepository {
 		$previousValue = $previousState['finalValue'];
 		$previousMessage = $previousState['message'];
 
+
 		try {
 			$currentDateTime = new \DateTime();
-			$product['modifiedAt'] = $currentDateTime->format('Y-m-d H:i:s');
-			$product['currentQuantity'] = $product['quantity'] + $previousQuantity;
-			$product['finalValue'] = $previousValue + ($product['value']*$product['quantity']);
-			$currentQuantity = $product['quantity'];
-			$product['quantity'] = $finalQuantity - $product['quantity'];
-			if( $product['quantity'] <= 0 and ($product['quantity'] - $product['currentQuantity'] <= 0)) {
-				$product['isBought'] = 1;
+			$newProduct['modifiedAt'] = $currentDateTime->format('Y-m-d H:i:s');
+			$newProduct['currentQuantity'] = $product['quantity'] + $previousQuantity;
+			$newProduct['finalValue'] = $previousValue + ($product['value']*$product['quantity']);
+
+			$newProduct['quantity'] = $finalQuantity;
+			$newProduct['message'] = $previousMessage;
+
+			if($finalQuantity  - $product['currentQuantity'] <= 0) {
+				$newProduct['isBought'] = 1;
 			}
-			$product['lastModifiedBy'] = $user;
-			$currentMessage = $product['message'];
-			$product['message'] = $previousMessage;
+
+			$newProduct['lastModifiedBy'] = $user;
+
 			if(isset($product['id']) && ctype_digit((string) $product['id'])) {
 				$productId = $product['id'];
 				unset($product['id']);
 
-				$this->db->update('products', $product, ['id' => $productId]);
+				$this->db->update('products', $newProduct, ['id' => $productId]);
+
 
 				$productAction = [];
-				$productAction['id_product'] = $productId;
+				$productAction['product_id'] = $productId;
 				$productAction['modifiedBy'] = $user;
-				$productAction['quantity'] = $currentQuantity;
+				$productAction['quantity'] = $product['quantity'];
 				$productAction['price'] = $product['value'];
-				$productAction['message'] = $currentMessage;
+				$productAction['message'] =  $product['message'];
 
 				$this->db->insert('products_actions', $productAction);
 

@@ -16,14 +16,6 @@
                 {{ form_errors(form.name) }}
             </div>
         </div>
-        <br/>
-        <div>
-            {{ form_label(form.maxCost, 'label.max_cost'|trans) }}<br/>
-            <div class="form-input">
-                {{ form_widget(form.maxCost) }}
-                {{ form_errors(form.maxCost) }}
-            </div>
-        </div>
         <input type="submit" value="{{ 'action.save'|trans }}" class="btn btn-success custom-m-t" />
         {{ form_end(form) }}
     </div>

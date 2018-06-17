@@ -15,33 +15,163 @@ body {
 }
 
 .main-content {
-    width: calc(100% - 300px);
+    width: calc(100% - 500px);
     height: 100%;
     position: absolute;
     top: 0;
     right: 0;
     display: flex;
     flex-direction: row;
+    margin-right: 240px;
+    margin-bottom: 100px;
 }
 
 .aside {
-    width: 300px;
+    width: 260px;
     height: 100%;
     position: fixed;
     left: 0;
     top: 0;
 }
 
+.tabset {
+    margin-top: 20px;
+    margin-bottom: -20px;
+    line-height: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.tab {
+    margin: 0;
+    height: 40px;
+    display: inline-block;
+    padding: 0 2px;
+    color: #000;
+    cursor: pointer;
+}
+
+.tab:hover {
+    background-color: #fff;
+    color: #000 !important;
+    border-radius: 5px;
+}
+
+.right-panel {
+    height: 100%;
+    width: 240px;
+    position: fixed;
+    right: 0;
+    top: 0;
+}
+
+.list-manager {
+    margin-top: 30px;
+}
+
+.list-manager a {
+    display: block;
+    margin-top: 5px;
+}
+
+.active {
+    color: #fff !important;
+}
+
+.inactive {
+    color: #000 !important;
+}
+
 .welcome {
     font-size: 1rem;
+}
+
+.list-container {
+    margin-top: 20px;
+    height: 55%;
+    overflow-y: auto;
+}
+
+.logout {
+    position: absolute;
+    left: 0;
+    bottom: 50px;
+    width: 100%;
+}
+
+.lists-wallet {
+    position: absolute;
+    left: 0;
+    bottom: 100px;
+    width: 100%;
+}
+
+.logout .fas {
+    margin-left: 10px;
+}
+
+.lists .fa {
+    margin-left: 10px;
 }
 
 .column {
     min-width: 400px;
 }
 
-.list-margin {
-    margin-top: 30px;
+.row {
+    margin-top: 20px;
+    padding: 10px 0;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    cursor: pointer;
+    background-color: lightcyan;
+}
+
+.manager-row {
+    width: 80%;
+    min-width: 200px;
+    background-color: lightcyan;
+    height: 40px;
+    margin-bottom: 10px;
+    position: relative;
+    line-height: 40px;
+    padding-left: 10px;
+    font-weight: bold;
+}
+
+.manager-row a {
+    position: absolute;
+    right: -30px;
+    top: 0;
+}
+
+.manager-row a:nth-of-type(2) {
+    right: -120px;
+}
+
+.row-add {
+    width: 100%;
+    height: 0px;
+    overflow: hidden;
+    -webkit-transition: all .5s;
+    -moz-transition: all .5s;
+    -ms-transition: all .5s;
+    -o-transition: all .5s;
+    transition: all .5s;
+}
+
+.open {
+    height: auto !important;
+}
+
+.custom-icon-pos {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 2rem;
 }
 
 .lists-content {
@@ -51,17 +181,23 @@ body {
     top: 100px;
     padding: 0 40px;
 }
-.custom-pos_rel {
-    position: relative;
-}
 
 .custom-btn_table {
     position: absolute;
-    top:5px;
+    right: 80px;
+}
+
+.custom-btn_table-danger {
+    right: 0;
+}
+
+
+.text-large {
+    font-size: 1.5rem;
 }
 
 .custom-narrow {
-    width: 70px;
+    width: 110px;
 }
 
 .custom-m-b {
@@ -109,4 +245,9 @@ body {
     width: 100%;
     background-color: black;
     margin: 20px 0;
+}
+
+.horizontal-line_light {
+    width: 100%;
+    height: 2px;
 }

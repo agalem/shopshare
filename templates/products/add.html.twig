@@ -35,7 +35,7 @@
     <h3 class="modal-title text-monospace custom-m-b">{{ 'label.add_element'|trans }} &#8594; '{{ editedList.name }}'</h3>
     <div>
         {{ form_start(form, { method: 'post', action: url('product_add', {'id' : editedList.id}) }) }}
-        <div class="form-group row">
+        <div class="form-group">
             <div class="col-form-label">{{ form_label(form.name, 'label.name'|trans) }}</div>
             <div class="col-auto">
                 {{ form_widget(form.name) }}
@@ -43,7 +43,7 @@
             </div>
         </div>
 
-        <div class="form-group row">
+        <div class="form-group">
             <div class="col-form-label">{{ form_label(form.value, 'label.value'|trans) }}<br/></div>
             <div>
                 <div class="input-group mb-2">
@@ -70,7 +70,7 @@
             </div>
         </div>
 
-        <div class="form-group row ">
+        <div class="form-group ">
             <div class="col-form-label">{{ form_label(form.message, 'label.message'|trans) }}</div>
             <div >
                 {{ form_widget(form.message) }}
@@ -78,7 +78,7 @@
             </div>
         </div>
 
-        <div class="form-group row {% if displayIsBought == false %} custom-hidden {% endif %}">
+        <div class="form-group {% if displayIsBought == false %} custom-hidden {% endif %}">
             <div class="col-form-label">{{ form_label(form.isBought, 'label.isBought'|trans) }}</div>
             <div >
                 {{ form_widget(form.isBought) }}
@@ -89,4 +89,8 @@
         <input type="submit" value="{{ 'action.save'|trans }}" class="btn btn-success custom-m-t" />
         {{ form_end(form) }}
     </div>
+{% endblock %}
+
+{% block managePanel %}
+    <a href="{{ url('lists_view', {'id': editedList.id}) }}" title="{{ 'label.return'|trans }}" class="text-light"> <span class="fa fa-arrow-left text-warning" ></span> {{ 'label.return'|trans }}</a>
 {% endblock %}

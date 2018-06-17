@@ -55,7 +55,7 @@ class ProductType extends AbstractType {
 				'required' => true,
 				'choices' => [
 					'label.item' => 1,
-					'label.wieght' => 0,
+					'label.weight' => 0,
 				],
 			]
 		);

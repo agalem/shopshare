@@ -129,6 +129,23 @@ class UserRepository {
 
 		try {
 			$users = $this->queryAll();
+			$users->where('u.role_id = 2');
+
+			return $users->execute()->fetchAll();
+
+		} catch (DBALException $exception) {
+
+			return [];
+
+		}
+
+	}
+
+	public function findAllAdmins() {
+
+		try {
+			$users = $this->queryAll();
+			$users->where('u.role_id = 1');
 
 			return $users->execute()->fetchAll();
 
@@ -169,6 +186,81 @@ class UserRepository {
 			return [];
 
 		}
+
+	}
+
+	public function updateUserData($id, $userData) {
+
+		try {
+
+			$user = $this->findUserById($id);
+
+			if(!$user) {
+				return [];
+			}
+
+			$this->db->update('users', $userData, ['id' => $id]);
+
+		} catch (DBALException $exception) {
+			return [];
+		}
+
+	}
+
+	public function delete($userId) {
+
+		$this->db->beginTransaction();
+
+		$this->db->delete( 'products_actions', [ 'modifiedBy' => $userId ] );
+
+		$this->db->delete( 'users', [ 'id' => $userId ] );
+
+
+		$this->db->commit();
+
+	}
+
+	public function deleteConnectedProducts($userId) {
+
+		$productsIds = $this->db->createQueryBuilder();
+		$productsIds->select('p.id')
+		            ->from('products', 'p')
+		            ->where('p.createdBy = :userId OR p.lastModifiedBy = :userId')
+		            ->setParameter(':userId', $userId, \PDO::PARAM_INT);
+		$productsIds = $productsIds->execute()->fetchAll();
+
+		if(is_array($productsIds)) {
+
+			foreach ($productsIds as $productsId) {
+
+				$this->db->delete('products_lists', ['product_id' => $productsId['id']]);
+				$this->db->delete('products_actions', ['product_id' => $productsId['id']]);
+				$this->db->delete('products', ['id' => $productsId['id']]);
+
+			}
+
+		}
+
+	}
+
+	public function deleteConnectedLists($userId) {
+
+
+		$listsIds = $this->db->createQueryBuilder();
+			$listsIds->select( 'l.id' )
+			         ->from( 'lists', 'l' )
+			         ->where( 'l.createdBy = :userId' )
+			         ->setParameter( ':userId', $userId, \PDO::PARAM_STR );
+			$listsIds = $listsIds->execute()->fetchAll();
+
+			if ( is_array( $listsIds ) ) {
+				foreach ( $listsIds as $listsId ) {
+					$this->db->delete('lists_users', ['list_id' => $listsId['id']]);
+				}
+			}
+
+		$this->db->delete('lists', ['createdBy' => $userId]);
+
 
 	}
 

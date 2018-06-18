@@ -64,27 +64,7 @@ class AccountType extends AbstractType
 				],
 			]
 		);
-		$builder->add(
-			'mail',
-			EmailType::class,
-			[
-				'label' => 'label.mail',
-				'required' => false,
-				'attr' => [
-					'max_length' => 100,
 
-				],
-				'constraints' => [
-					new Assert\NotBlank(),
-					new Assert\Length(
-						[
-							'min' => 8,
-							'max' => 100,
-						]
-					),
-				],
-			]
-		);
 	}
 
 	/**

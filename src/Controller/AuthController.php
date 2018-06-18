@@ -1,8 +1,5 @@
 <?php
-/**
- * Auth controller.
- *
- */
+
 namespace Controller;
 
 use Form\AccountType;
@@ -13,14 +10,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Repository\UserRepository;
 use Symfony\Component\Security\Core\User\User;
 
-/**
- * Class AuthController.
- */
+
 class AuthController implements ControllerProviderInterface
 {
-	/**
-	 * {@inheritdoc}
-	 */
+
 	public function connect(Application $app)
 	{
 		$controller = $app['controllers_factory'];
@@ -39,14 +32,7 @@ class AuthController implements ControllerProviderInterface
 		return $controller;
 	}
 
-	/**
-	 * Login action.
-	 *
-	 * @param \Silex\Application                        $app     Silex application
-	 * @param \Symfony\Component\HttpFoundation\Request $request HTTP Request
-	 *
-	 * @return \Symfony\Component\HttpFoundation\Response HTTP Response
-	 */
+
 	public function loginAction(Application $app, Request $request)
 	{
 		$user = ['login' => $app['session']->get('_security.last_username')];
@@ -61,13 +47,7 @@ class AuthController implements ControllerProviderInterface
 		);
 	}
 
-	/**
-	 * Logout action.
-	 *
-	 * @param \Silex\Application $app Silex application
-	 *
-	 * @return \Symfony\Component\HttpFoundation\Response HTTP Response
-	 */
+
 	public function logoutAction(Application $app)
 	{
 		$app['session']->clear();
@@ -85,6 +65,24 @@ class AuthController implements ControllerProviderInterface
 		if($form->isSubmitted() && $form->isValid()) {
 			$usersRepository = new UserRepository($app['db']);
 			$newUser = $form->getData();
+
+			$ifExists = $usersRepository->getUserByLogin($newUser['login']);
+			$ifExists = is_array($ifExists);
+
+			if ($ifExists == true) {
+
+				$app['session']->getFlashBag()->add(
+					'messages',
+					[
+						'type' => 'danger',
+						'message' => 'message.username_exists',
+					]
+				);
+
+				return $app->redirect($app['url_generator']->generate('admin_add'), 301);
+
+			}
+
 			$newUser['password'] = $app['security.encoder.bcrypt']->encodePassword($newUser['password'], '');
 			$usersRepository->save($newUser);
 

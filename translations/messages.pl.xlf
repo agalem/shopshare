@@ -234,6 +234,10 @@
                 <source>title.wallet</source>
                 <target>Portfel</target>
             </trans-unit>
+            <trans-unit id="title.manage_account">
+                <source>title.manage_account</source>
+                <target>Ustawienia konta</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

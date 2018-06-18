@@ -35,6 +35,17 @@ class ListsRepository {
 		return $result;
 	}
 
+	public function checkIfNameExists($name, $userId) {
+
+		$queryBuilder = $this->queryAll();
+		$queryBuilder->where('l.name = :name AND l.createdBy = :userId')
+					->setParameter(':name', $name, \PDO::PARAM_STR)
+					->setParameter(':userId', $userId, \PDO::PARAM_INT);
+
+		return $queryBuilder->execute()->fetch();
+
+	}
+
 	public function findLinkedLists($userId) {
 
 		try {
@@ -99,7 +110,7 @@ class ListsRepository {
 	}
 
 	public function deleteConnection($listId) {
-		$this->db->delete('lists_users', ['id_list' => $listId]);
+		$this->db->delete('lists_users', ['list_id' => $listId]);
 	}
 
 	public function getCurrentSpendings($listId) {
@@ -247,17 +258,17 @@ class ListsRepository {
 			->setParameter(':listId', $listId, \PDO::PARAM_INT)
 			->setParameter(':userId', $userId, \PDO::PARAM_INT);
 
-		$ifConnectionExists->execute()->fetch() ? $ifConnectionExists = true : $ifConnectionExists = false;
+		$ifConnectionExists->execute()->fetch() != [] ? $ifConnectionExists = true : $ifConnectionExists = false;
+
 
 		$newConnection['list_id'] = $listId;
 		$newConnection['user_id'] = $userId;
 
-		if(!$ifConnectionExists == true) {
+		if($ifConnectionExists == true) {
 			return [];
 		} else {
-			$this->db->insert( 'lists_users', $newConnection );
+			return $this->db->insert( 'lists_users', $newConnection );
 		}
-		return $newConnection;
 
 	}
 
@@ -269,13 +280,13 @@ class ListsRepository {
 			$productsIds = $this->findLinkedProductsIds($listId);
 
 			foreach ($productsIds as $productId) {
-				$this->db->delete('products_actions', ['product_id' => $productId]);
+				$this->db->delete('products_actions', ['product_id' => $productId['product_id']]);
 			}
 
 			$this->db->delete('products_lists', ['list_id' => $listId]);
 
 			foreach ($productsIds as $productId) {
-				$this->db->delete('products', ['id' => $productId]);
+				$this->db->delete('products', ['id' => $productId['product_id']]);
 			}
 
 			$this->db->commit();

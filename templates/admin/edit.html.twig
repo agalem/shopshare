@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block main %}
-    <h3 class="modal-title text-monospace custom-m-b">{{ 'label.edit_list'|trans({'%name%': editedUser.login}) }}</h3>
+    <h2 class="h5 modal-title text-monospace custom-m-b">{{ 'label.edit_user'|trans({'%name%': editedUser.login}) }}</h2>
     <div class="form-group">
         {{ form_start(form, { method: 'post', action: url('user_edit', {'id': editedUser.id}) }) }}
         <div>
@@ -19,5 +19,17 @@
         <input type="submit" value="{{ 'action.change'|trans }}" class="btn btn-success custom-m-t" />
         {{ form_end(form) }}
     </div>
+
+    <a href="{{ url('user_delete', {'id': editedUser.id}) }}" class="btn btn-danger text-light mt-2">{{ 'label.delete'|trans }}</a><br/><br/>
+    <a href="{{ url('admin_manager') }}" class="btn btn-info text-light mt-4">{{ 'label.return'|trans }}</a>
+
+    {% if userLists is defined and userLists|length %}
+        <h3 class="h6 mt-5">{{ 'label.user_lists'|trans }}</h3>
+        <ol>
+            {% for list in userLists  %}
+                <li>{{ list.name }}</li>
+            {% endfor %}
+        </ol>
+    {% endif %}
 
 {% endblock %}

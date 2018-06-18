@@ -18,7 +18,7 @@
 
     <div class="form-group form-signin">
         <h1 class="h3 mb-3 font-weight-normal">{{ 'title.auth_create'|trans }}</h1>
-        {{ form_start(form, { method: 'post', action: path('auth_create') }) }}
+        {{ form_start(form, { method: 'post', action: path('admin_add') }) }}
         <div class="form-group row">
             <span class="col-sm-2 col-form-label">{{ form_label(form.login, 'label.login'|trans) }}</span>
             <div class="col-sm-8">

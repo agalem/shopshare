@@ -30,47 +30,57 @@
         <aside class="aside bg-primary">
             <h1 class="card-title text-light m-lg-2">ShopLista</h1>
 
-            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+            {% if  is_granted('ROLE_ADMIN') %}
+                <a href="" title="{{ 'label.add_admin'|trans }}" class="text-light"><li class="list-group-item bg-primary">{{ 'labe.add_admin'|trans }} </li></a>
+            {% elseif is_granted('IS_AUTHENTICATED_FULLY') %}
             <div class="tabset bg-primary">
                 <a onclick="handleActiveTab();" id="tab1" class="tab active">{{ 'label.yours_lists'|trans }} <span class="fas fa-long-arrow-alt-down"></span></a>
                 <a onclick="handleActiveTab();" id="tab2" class="tab inactive">{{ 'label.linked_lists'|trans }} <span class="fas fa-long-arrow-alt-down"></span></a>
             </div>
 
             <div class="list-container userLists-container" data-name="tab1">
-            {% if lists is defined and lists|length %}
-
                 <input onchange="searchList();" id="search_user" class="form-control d-inline" type="search" placeholder="{{ 'label.search_list'|trans }}">
                 <ul id="list_user" class="list-group list-margin" >
+            {% if lists is defined and lists|length %}
+
+
                     {% for list in lists %}
                         <a href="{{ url('lists_view', {'id': list.id}) }}" title="{{ list.name }}" class="text-light"><li class="list-group-item bg-primary">{{ list.name }} </li></a>
                     {% endfor %}
-                </ul>
+
 
                 {% else %}
                 <p>{{ 'label.no_user_lists'|trans }}</p>
             {% endif %}
+                </ul>
             </div>
 
             <div class="list-container userLinked-container d-none" data-name="tab2">
-            {% if linkedLists is defined and linkedLists|length %}
-
                 <input onchange="searchList();" id="search_linked" class="form-control" type="search" placeholder="{{ 'label.search_list'|trans }}">
                 <ul id="list_linked" class="list-group list-margin" >
+            {% if linkedLists is defined and linkedLists|length %}
+
+
                     {% for linkedList in linkedLists %}
                         <a href="{{ url('lists_view', {'id': linkedList.id}) }}" title="{{ linkedList.name }}" class="text-light"><li class="list-group-item bg-primary">{{ linkedList.name }} <span class="fas fa-users"></span></li></a>
                     {% endfor %}
-                </ul>
+
 
                 {% else %}
                     <p>{{ 'label.no_linked_lists'|trans }}</p>
 
             {% endif %}
+                </ul>
             </div>
 
             {% endif %}
 
             <ul class="list-group list-margin">
-                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                {% if  is_granted('ROLE_ADMIN') %}
+                    <a href="{{ url('auth_logout') }}" title="{{ 'auth.logout.label'|trans }}" class="text-light">
+                        <li class="logout list-group-item bg-primary">{{ 'auth.logout.label'|trans }} <span class="fas fa-sign-out-alt"></span></li>
+                    </a>
+                {% elseif is_granted('IS_AUTHENTICATED_FULLY') %}
                     <a href="{{ url('user_wallet') }}" title="{{ 'title.wallet'|trans }}" class="lists-wallet lists text-light"><li class="list-group-item bg-primary">{{ 'title.wallet'|trans }} <span class="fa fa-wallet"></span></li></a>
                     <a href="{{ url('auth_logout') }}" title="{{ 'auth.logout.label'|trans }}" class="text-light">
                         <li class="logout list-group-item bg-primary">{{ 'auth.logout.label'|trans }} <span class="fas fa-sign-out-alt"></span></li>
@@ -91,16 +101,21 @@
         </main>
 
     </div>
-{% if is_granted('IS_AUTHENTICATED_FULLY') %}
-    <div class="right-panel bg-dark">
-        <ul class="list-manager">
-            <a href="{{ url('lists_manager') }}" title="{{ 'title.manage_lists'|trans }}" class="text-light"><span class="fa fa-cog text-warning"></span> {{ 'title.manage_lists'|trans }} </a>
-            <a href="{{ url('list_add') }}" title="{{ 'title.add_list'|trans }}" class="text-light"> <span class="fa fa-file text-warning" ></span> {{ 'title.add_list'|trans }}</a>
-        </ul>
-        <ul class="list-manager">
-            {% block managePanel %}{% endblock %}
-        </ul>
-    </div>
+{% if is_granted('ROLE_ADMIN') %}
+    <!---->
+    {% elseif is_granted('IS_AUTHENTICATED_FULLY') %}
+        <div class="right-panel bg-dark">
+            <ul class="list-manager">
+                <a href="{{ url('lists_manager') }}" title="{{ 'title.manage_lists'|trans }}" class="text-light"><span class="fa fa-cog text-warning"></span> {{ 'title.manage_lists'|trans }} </a>
+                <a href="{{ url('list_add') }}" title="{{ 'title.add_list'|trans }}" class="text-light"> <span class="fa fa-file text-warning" ></span> {{ 'title.add_list'|trans }}</a>
+            </ul>
+            <ul class="list-manager">
+                <a href="" title="{{ 'title.manage_account'|trans }}" class="text-light"> <span class="fa fa-user-cog text-warning "></span> {{ 'title.manage_account'|trans }}</a>
+            </ul>
+            <ul class="list-manager">
+                {% block managePanel %}{% endblock %}
+            </ul>
+        </div>
 {% endif %}
 
 {% block javascripts %}

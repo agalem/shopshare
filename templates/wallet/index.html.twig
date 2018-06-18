@@ -16,7 +16,7 @@
                             {% for element in forUser %}
                                 <div onclick="handlePopover();" data-name="row" class="row" id="{{ element.id }}">
                                     <div data-name="product" class="text-dark text-monospace">{{ element.login }}</div>
-                                    <div class="text-success text-monospace text-large pl-4">+{{ element.price }}</div>
+                                    <div class="text-success text-monospace text-large pl-4">+{{ element.price * element.quantity }} PLN</div>
                                     <div class="custom-btn_table"><a href="{{ url('payment_delete', {'id': element.id}) }}"><button type="button" class="btn btn-success">{{ 'label.payed'|trans }}</button></a></div>
 
                                     <span data-name="{{ element.id }}" class="fa fa-angle-down text-info custom-icon-pos"></span>
@@ -37,7 +37,7 @@
                             {% for element in byUser %}
                                 <div onclick="handlePopover();" data-name="row" class="row" id="{{ element.id }}">
                                     <div data-name="product" class="text-dark text-monospace">{{ element.login }}</div>
-                                    <div class="text-danger text-monospace text-large pl-4">-{{ element.price }}</div>
+                                    <div class="text-danger text-monospace text-large pl-4">-{{ element.price * element.quantity }}PLN</div>
 
                                     <span data-name="{{ element.id }}" class="fa fa-angle-down text-info custom-icon-pos"></span>
                                 </div>
@@ -56,7 +56,7 @@
                     {% for element in byUserForUser %}
                         <div onclick="handlePopover();" data-name="row" class="row" id="{{ element.id }}">
                             <div data-name="product" class="text-dark text-monospace">{{ element.name }}</div>
-                            <div class="text-dark text-monospace text-large pl-4">{{ element.price }}</div>
+                            <div class="text-dark text-monospace text-large pl-4">{{ element.price * element.quantity }} PLN</div>
 
                             <span data-name="{{ element.id }}" class="fa fa-angle-down text-info custom-icon-pos"></span>
                         </div>

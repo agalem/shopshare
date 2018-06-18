@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block main %}
-    <h2 class="h5 modal-title text-monospace custom-m-b">Czy otrzymałaś/eś płatność <b>{{ deletedPayment.price }}</b> PLN za <b>{{ deletedPayment.name }}</b>?</h2>
+    <h2 class="h5 modal-title text-monospace custom-m-b">Czy otrzymałaś/eś płatność <b>{{ deletedPayment.price * deletedPayment.quantity}}</b> PLN za <b>{{ deletedPayment.name }}</b>?</h2>
     <div class="form-group">
         {{ form_start(form, { method: 'post', action: url('payment_delete', {'id': deletedPayment.id}) }) }}
         {{ form_widget(form) }}

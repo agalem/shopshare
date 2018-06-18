@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block main %}
-    <h4 class="modal-title text-monospace mb-3">{{ activeList.name }} {% if isLinked == true %}<span class="fa fa-users"></span> {% endif %}</h4>
+    <h4 class="modal-title text-monospace mb-3">{{ activeList.name }} {% if sharedUsers is defined and sharedUsers|length %}<span class="fa fa-users"></span> {% endif %}</h4>
 
             <input onchange="searchProducts();" class="form-control" type="search" id="products" placeholder="{{ 'label.search_products'|trans }}">
 
@@ -18,7 +18,7 @@
                         <div onclick="handlePopover();" data-name="row" class="row" id="{{ product.id }}">
                             <div  class="custom-narrow"> <span class="badge badge-primary badge-pill">{{ product.quantity - product.currentQuantity }}</span><span> {% if product.isItem == true %} {{ 'label.item'|trans }} {% else %} {{ 'label.weight'|trans }} {% endif %}</span></div>
                             <div data-name="product" class="text-dark {% if product.quantity - product.currentQuantity <= 0  %} custom-bought {% endif %}">{{ product.name }}</div>
-                            {% if product.quantity - product.currentQuantity <= 0 %}
+                            {% if product.quantity - product.currentQuantity > 0 %}
                                 <div class="custom-btn_table"><a href="{{ url('product_buy', {'id': product.id}) }}"><button type="button" class="btn btn-success">{{ 'label.bought'|trans }}</button></a></div>
                             {% endif %}
                             <span data-name="{{ product.id }}" class="fa fa-angle-down text-info custom-icon-pos"></span>
@@ -53,6 +53,7 @@
                             <span data-name="{{ product.id }}" class="fa fa-angle-down text-info custom-icon-pos"></span>
                         </div>
                         <div class="row-add " data-name="{{ product.id }}">
+
                             <span>Added by: </span><span>{{ product.login }}</span><br/>
                             <span>Added at: </span><span>{{ product.createdAt }}</span><br/>
                             <span>Last modified: </span><span>{{ product.modifiedAt }}</span><br/>
@@ -68,17 +69,17 @@
 {% block managePanel %}
     <a href="{{ url('product_add', {'id': activeList.id}) }}" title="{{ 'label.add_element'|trans }}" class="text-light"> <span class="fa fa-plus text-warning" ></span> {{ 'label.add_element'|trans }}</a>
 
-    {% if isLinked == true %}
+    {% if sharedUsers is defined and sharedUsers|length %}
         <p class="text-light mt-4 mb-3">{{ 'title.shared_with'|trans }}:</p>
              <ol class="text-light">
-                {% if listOwner is defined and listOwner|length %}
+                {% if isLinked == true and listOwner is defined and listOwner|length %}
                     <li>{{ listOwner.login }} <span class="fa fa-user-ninja"></span> </li>
                 {% endif %}
-                 {% if sharedUsers is defined and sharedUsers|length %}
+
                     {% for user in sharedUsers %}
                         <li>{{ user }}</li>
                     {% endfor %}
-                 {% endif %}
+
             </ol>
 
     {% endif %}

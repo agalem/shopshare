@@ -180,12 +180,28 @@ class ListsController implements ControllerProviderInterface {
 		$userRole = $userRepository->getUserRoles($userId)[0];
 
 
+
 		if($userRole == 'ROLE_ADMIN') {
 			return $app->redirect($app['url_generator']->generate('admin_manager'));
 		}
 
 		if($form->isSubmitted() && $form->isValid()) {
 			$newList = $form->getData();
+
+			$ifExists = $listsRepository->checkIfNameExists($newList['name'], $userId);
+
+			if( $ifExists != []) {
+				$app['session']->getFlashBag()->add(
+					'messages',
+					[
+						'type' => 'danger',
+						'message' => 'message.list_exist',
+					]
+				);
+
+				return $app->redirect($app['url_generator']->generate('list_add'), 301);
+			}
+
 			$newList['createdBy'] = $userId;
 
 			$listsRepository->save($newList);
@@ -225,7 +241,6 @@ class ListsController implements ControllerProviderInterface {
 
 		$isLinked = false;
 
-		dump($list['createdBy'] == $userId);
 
 		foreach ($listsRepository->findLinkedLists($userId) as $linkedList) {
 			if($linkedList['id'] == $id) {
@@ -393,12 +408,31 @@ class ListsController implements ControllerProviderInterface {
 
 			$data = $form->getData();
 
+			$userId = $this->getUserId($app, $data['user_login']);
+
 			$userRole = $listsRepository->checkIfAdmin($data['user_login']);
 			$userRole = $userRole['name'];
 
 			$isOnList = $listsRepository->checkIfOnList($id, $data['user_login']);
-			$isOnList = count($isOnList) > 0 ? true : false;
+			if(is_array($isOnList)) {
+				$isOnList = count($isOnList) > 0 ? true : false;
+			}
 
+			$ifExists = $userRepository->checkIfExists($data['user_login']);
+
+			if($ifExists == []) {
+
+				$app['session']->getFlashBag()->add(
+					'messages',
+					[
+						'type' => 'warning',
+						'message' => 'message.user_not_found',
+					]
+				);
+
+				return $app->redirect($app['url_generator']->generate('list_share', array('id' => $id)), 301);
+
+			}
 
 			if($user == $data['user_login']) {
 
@@ -442,7 +476,8 @@ class ListsController implements ControllerProviderInterface {
 
 			}
 
-			$listsRepository->addUser($id, $form->getData());
+
+			$listsRepository->addUser($id, $userId);
 
 			$app['session']->getFlashBag()->add(
 				'messages',

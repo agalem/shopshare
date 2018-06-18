@@ -49,7 +49,7 @@ class ProductsController implements ControllerProviderInterface {
 		$listsRepository = new ListsRepository($app['db']);
 		$product = $productsRepository->findOneById($id);
 		$connectedList = $listsRepository->getConnectedList($id);
-		$listId = $connectedList['list_id'];
+		$listId = $connectedList[0]['list_id'];
 
 		$username = $this->getUsername($app);
 		$userId = $this->getUserId($app, $username);
@@ -176,9 +176,10 @@ class ProductsController implements ControllerProviderInterface {
 		$product = $productsRepository->findOneById($id);
 		$listsRepository = new ListsRepository($app['db']);
 		$connectedList = $listsRepository->getConnectedList($id);
-		$listId = $connectedList['list_id'];
+		$listId = $connectedList[0]['list_id'];
 
-		$user = $this->getUser($app);
+		$username = $this->getUsername($app);
+		$userId = $this->getUserId($app, $username);
 
 		if(!$product) {
 			$app['session']->getFlashBag()->add(
@@ -192,7 +193,7 @@ class ProductsController implements ControllerProviderInterface {
 			return $app->redirect($app['url_generator']->generate('list_edit', array('id' => $listId)));
 		}
 
-		if ($product['createdBy'] != $user) {
+		if ($product['createdBy'] != $userId) {
 			$app['session']->getFlashBag()->add(
 				'messages',
 				[
@@ -218,7 +219,7 @@ class ProductsController implements ControllerProviderInterface {
 				]
 			);
 
-			return $app->redirect($app['url_generator']->generate('list_edit', array('id' => $listId)), 301);
+			//return $app->redirect($app['url_generator']->generate('list_edit', array('id' => $listId)), 301);
 		}
 
 		return $app['twig']->render(
@@ -226,7 +227,7 @@ class ProductsController implements ControllerProviderInterface {
 			[
 				'deletedProduct' => $product,
 				'form' => $form->createView(),
-				'lists' => $listsRepository->findAll($user),
+				'lists' => $listsRepository->findAll($userId),
 			]
 		);
 	}

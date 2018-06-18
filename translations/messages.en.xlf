@@ -234,6 +234,10 @@
                 <source>title.hello</source>
                 <target>Welcome</target>
             </trans-unit>
+            <trans-unit id="title.manage_account">
+                <source>title.manage_account</source>
+                <target>Manage Account</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}
+    Application
+{% endblock %}
+
+{% block main %}
+    <h2 class="h5 modal-title text-monospace custom-m-b">{{ 'label.delete_user'|trans }}</h2>
+    <div class="form-group">
+        {{ form_start(form, { method: 'post', action: url('user_delete', {'id' : deletedUser.id}) }) }}
+        {{ form_widget(form) }}
+        <input type="submit" value="{{ 'action.delete'|trans }}" class="btn btn-danger" />
+        {{ form_end(form) }}
+    </div>
+
+    <br/><br/>
+    <a href="{{ url('admin_manager') }}" class="btn btn-info text-light mt-4">{{ 'label.return'|trans }}</a>
+{% endblock %}

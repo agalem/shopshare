@@ -70,6 +70,8 @@ class ProductsRepository {
 	}
 
 
+
+
 	public function getBoughtByUser($productsIds, $userId) {
 
 		$queryBuilder = $this->db->createQueryBuilder();
@@ -188,12 +190,13 @@ class ProductsRepository {
 			$this->db->commit();
 		} catch (DBALException $e) {
 			$this->db->rollBack();
-			throw $e;
+			return [];
 		}
 
 	}
 
 	public function delete($product) {
+
 		$this->removeLinkedProducts($product['id']);
 		$this->db->delete('products', ['id' => $product['id']]);
 	}
@@ -248,7 +251,7 @@ class ProductsRepository {
 			$this->db->commit();
 		} catch (DBALException $e) {
 			$this->db->rollBack();
-			throw $e;
+			return [];
 		}
 	}
 
@@ -256,13 +259,17 @@ class ProductsRepository {
 	protected function removeLinkedProducts($productId) {
 		$this->db->beginTransaction();
 
+
 		try {
 
-			$this->db->delete('products_actions', ['id_product' => $productId]);
+			$this->db->delete('products_actions', ['product_id' => $productId]);
 			$this->db->delete('products_lists', ['product_id' => $productId]);
 
+		$this->db->commit();
+
 		} catch (DBALException $exception) {
-			throw $exception;
+			$this->db->rollBack();
+			return [];
 		}
 
 	}

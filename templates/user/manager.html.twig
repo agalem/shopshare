@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}
+    Application
+{% endblock %}
+
+{% block main %}
+    <h3 class="modal-title text-monospace custom-m-b">{{ 'label.edit_account'|trans }} <b>{{ editedUserName }}</b></h3>
+    <div class="form-group">
+        {{ form_start(form, { method: 'post', action: url('user_edit_self') }) }}
+        <div>
+            {{ form_label(form.login, 'label.login'|trans) }}<br/>
+            <div class="form-input">
+                {{ form_widget(form.login) }}
+                {{ form_errors(form.login) }}
+            </div>
+        </div>
+        <br/>
+        <div>
+            {{ form_label(form.password, 'label.password'|trans) }}<br/>
+            <div class="form-input">
+                {{ form_widget(form.password) }}
+                {{ form_errors(form.password) }}
+            </div>
+        </div>
+        <input type="submit" value="{{ 'action.change'|trans }}" class="btn btn-success custom-m-t" />
+        {{ form_end(form) }}
+    </div>
+
+    <a href="{{ url('user_delete_self') }}" class="btn btn-danger text-light mt-5" title="{{ 'label.delete_account'|trans }}">{{ 'label.delete_account'|trans }}</a>
+
+{% endblock %}

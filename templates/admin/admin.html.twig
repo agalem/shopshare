@@ -6,16 +6,31 @@
 {% endblock %}
 
 {% block main %}
-    <h4 class="modal-title text-monospace">{{ 'title.manage_users'|trans }}</h4>
+    <h2 class="h5 modal-title text-monospace">{{ 'title.admins'|trans }}</h2>
+    {% if admins is defined and admins|length %}
+        <table class="table table-hover">
+            <tbody>
+            {% for user in admins %}
+                <div  data-name="row" class="row" >
+                    <div class="text-dark pl-5">{{ user.login }}</div>
+                    <div class="custom-btn_table"><a href="{{ url('user_edit', {'id' : user.id}) }}"><button type="button" class="btn btn-success">{{ 'label.edit'|trans }}</button></a></div>
+                </div>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+<br/>
+    <h2 class="h5 modal-title text-monospace">{{ 'title.manage_users'|trans }}</h2>
+
     {% if users is defined and users|length %}
         <table class="table table-hover">
             <caption>{{ 'title.manage_users'|trans }}</caption>
             <tbody>
             {% for user in users %}
-                <tr>
-                    <th scope="row" class="text-uppercase">{{ user.login }}</th>
-
-                </tr>
+                <div  data-name="row" class="row" >
+                    <div class="text-dark pl-5">{{ user.login }}</div>
+                    <div class="custom-btn_table"><a href="{{ url('user_edit', {'id' : user.id}) }}"><button type="button" class="btn btn-success">{{ 'label.edit'|trans }}</button></a></div>
+                </div>
             {% endfor %}
             </tbody>
         </table>

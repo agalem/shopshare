@@ -272,6 +272,22 @@ class ListsRepository {
 
 	}
 
+	public function removeUser($listId, $userId) {
+
+		$queryBuilder = $this->db->createQueryBuilder();
+		$queryBuilder->select('lu.id')
+					->from('lists_users', 'lu')
+					->where('lu.list_id = :listId AND lu.user_id = :userId')
+					->setParameter(':listId', $listId, \PDO::PARAM_INT)
+					->setParameter(':userId', $userId, \PDO::PARAM_INT);
+
+		$connectionId = $queryBuilder->execute()->fetch();
+		$connectionId = $connectionId['id'];
+
+		$this->db->delete('lists_users', ['id' => $connectionId]);
+
+	}
+
 	protected function removeLinkedProducts($listId) {
 		$this->db->beginTransaction();
 

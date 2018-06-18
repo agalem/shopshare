@@ -8,7 +8,7 @@ use Controller\ListsController;
 
 $app->get('/', function () use ($app) {
 	return $app['twig']->render('index.html.twig');
-});
+})->bind('index_page');
 
 $app->mount('/lists', new ListsController());
 $app->mount('/product', new \Controller\ProductsController());

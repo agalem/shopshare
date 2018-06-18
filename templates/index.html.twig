@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/index.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+    <title>ShopLista -  dziel wydatki</title>
+
+
+</head>
+<body>
+
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="{{ url('index_page') }}">ShopLista</a>
+        <button onclick="toggleMenu();" class="navbar-toggler" type="button" data-toggle="collapse" data-target="navbarCollapse"  aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse " id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+
+            </ul>
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                <form class="form-inline mt-2 mt-md-0">
+                    <a href="{{ url('auth_logout') }}" class="btn btn-warning my-2 my-sm-0 mr-4 text-dark" >Wyloguj się</a>
+                </form>
+            {% else %}
+                <form class="form-inline mt-2 mt-md-0">
+                    <a href="{{ url('auth_create') }}" class="btn btn-primary my-2 my-sm-0 mr-4 text-light" >Zarejestruj się</a>
+                    <a href="{{ url('auth_login') }}" class="btn btn-success my-2 my-sm-0 text-light" >Zaloguj się</a>
+                </form>
+            {% endif %}
+        </div>
+    </nav>
+</header>
+
+<main role="main">
+
+    <div  class="carousel slide" data-ride="carousel">
+
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img class="first-slide" src="{{ asset('images/IMG_1859.JPG') }}">
+                <div class="container ">
+                    <div class="carousel-caption text-left p-4">
+                        <h1 class="text-warning bg-dark" style="font-weight: bold; ">ShopLista</h1>
+                        <p class="bg-warning text-dark p-1">Dziel wydatki. Żyj lepiej.</p>
+                        <p><a class="btn btn-lg btn-primary" href="{{ url('lists_index') }}" role="button">Przejdź do aplikacji</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="container marketing">
+
+        <div class="row featurette">
+            <div class="col-md-7">
+                <h2 class="featurette-heading">Czym jest ShopLista? <span class="text-muted">Dlaczego warto z niej korzystać?</span></h2>
+                <p class="lead">Jest to aplikacja, która umożliwia łatwiejsze zarządzanie podziałem kosztów, nie tylko za zakupy, ale również za mieszkanie oraz inne codzienne wydatki. Nie będziesz musiał się więcej zastanawiać czy twój współlokator wpłacił swoją część opłat.</p>
+            </div>
+            <div class="col-md-5 custom-img-top">
+                <img class="featurette-image img-fluid mx-auto " src="{{ asset('images/screenshot1.png') }}" alt="Screenshot of a wallet page">
+            </div>
+        </div>
+
+        <hr class="featurette-divider">
+
+        <div class="row featurette">
+            <div class="col-md-7 order-md-2">
+                <h2 class="featurette-heading">Dodawaj swoje produkty do list zakupów. <span class="text-muted">Nie musisz po wszystko samemu chodzić do sklepu.</span></h2>
+                <p class="lead">Jeśli Twój współlokator wybiera się akurat na zakupy może kupić kilka rzeczy również dla Ciebie. Dodaj je tylko do współdzielonej z nim listy.</p>
+            </div>
+            <div class="col-md-5 order-md-1 custom-img-top">
+                <img class="featurette-image img-fluid mx-auto" src="{{ asset('images/screenshot2.png') }}" alt="Screenshot of a list page">
+            </div>
+        </div>
+
+        <hr class="featurette-divider">
+
+        <div class="row featurette">
+            <div class="col-md-7">
+                <h2 class="featurette-heading">Ikony w aplikacji. <span class="text-muted">Co oznaczają?</span></h2>
+                <p class="lead">W aplikacji znajdziesz kilka ikon. Ich zadaniem jest łatwiejsze odnalezienie informacji której szukasz.</p>
+            </div>
+            <div class="col-md-5 custom-img-top">
+                <div class="custom-section text-dark" >
+                    <div >
+                        <span class="fa fa-user"></span><span> - Artykuł dodany do listy przez innego użytkownika</span>
+                    </div>
+                    <div >
+                        <span class="fa fa-users"></span><span> - Lista, która jest współdzielona z innymi użytkownikami</span>
+                    </div>
+                    <div >
+                        <span class="fa fa-user-cog"></span><span> - Ustawienia konta</span>
+                    </div>
+                    <div >
+                        <span class="fa fa-cog"></span><span> - Zarządzanie listami</span>
+                    </div>
+                    <div >
+                        <span class="fa fa-file"></span><span> - Tworzenie nowej listy</span>
+                    </div>
+                    <div >
+                        <span class="fa fa-wallet"></span><span> - Portfel</span>
+                    </div>
+                    <div >
+                        <span class="fa fa-user-plus"></span><span> - Dodanie użytkownika do listy</span>
+                    </div>
+                    <div >
+                        <span class="fa fa-user-minus"></span><span> - Usunięcie użytkownika z listy</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="featurette-divider">
+
+
+
+
+    </div><!-- /.container -->
+
+
+    <!-- FOOTER -->
+    <footer class="container">
+        <!--<p class="float-right"><a href="#">Powrót na górę</a></p>
+        <p>&copy; 2017-2018 Company, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>-->
+    </footer>
+</main>
+
+
+<script src="{{ asset('js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('js/scripts.js') }}"></script>
+
+</body>
+</html>

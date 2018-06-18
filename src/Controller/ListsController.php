@@ -52,6 +52,11 @@ class ListsController implements ControllerProviderInterface {
 		           ->assert('id', '[1-9]\d*')
 		           ->bind('list_share');
 
+		$controller->match('/{id}/deleteUser', [$this, 'deleteUserAction'])
+		           ->method('GET|POST')
+		           ->assert('id', '[1-9]\d*')
+		           ->bind('list_delete_user');
+
 		return $controller;
 	}
 
@@ -492,6 +497,88 @@ class ListsController implements ControllerProviderInterface {
 
 		return $app['twig']->render(
 			'lists/share.html.twig',
+			[
+				'lists' => $listsRepository->findAll($userId),
+				'linkedLists' => $listsRepository->findLinkedLists($userId),
+				'form' => $form->createView(),
+				'editedList' => $list,
+				'sharedUsers' => $listsRepository->getSharedUsers($id, $user),
+			]
+		);
+	}
+
+
+	public function deleteUserAction(Application $app, $id, Request $request) {
+
+		$listsRepository = new ListsRepository($app['db']);
+		$list = $listsRepository->findOneById($id);
+
+		$username = [];
+
+		$user = $this->getUsername($app);
+		$userId = $this->getUserId($app, $user);
+
+
+
+		if(!$list || $list['createdBy'] != $userId) {
+			$app['session']->getFlashBag()->add(
+				'messages',
+				[
+					'type' => 'warning',
+					'message' => 'message.record_not_found',
+				]
+			);
+			return $app->redirect($app['url_generator']->generate('lists_index'));
+		}
+
+		$form = $app['form.factory']->createBuilder(ListConnectionType::class, $username)->getForm();
+		$form->handleRequest($request);
+
+		if($form->isSubmitted() && $form->isValid()) {
+
+
+			$data = $form->getData();
+
+			$userId = $this->getUserId($app, $data['user_login']);
+
+			$userRole = $listsRepository->checkIfAdmin($data['user_login']);
+
+			$isOnList = $listsRepository->checkIfOnList($id, $data['user_login']);
+			if(is_array($isOnList)) {
+				$isOnList = count($isOnList) > 0 ? true : false;
+			}
+
+
+			if ($isOnList == false) {
+
+				$app['session']->getFlashBag()->add(
+					'messages',
+					[
+						'type' => 'warning',
+						'message' => 'message.user_not_found',
+					]
+				);
+
+				return $app->redirect($app['url_generator']->generate('list_delete_user', array('id' => $id)), 301);
+
+			}
+
+
+			$listsRepository->removeUser($id, $userId);
+
+			$app['session']->getFlashBag()->add(
+				'messages',
+				[
+					'type' => 'success',
+					'message' => 'message.user_successfully_added',
+				]
+			);
+
+			return $app->redirect($app['url_generator']->generate('list_delete_user', array('id' => $id)), 301);
+		}
+
+		return $app['twig']->render(
+			'lists/deleteUser.html.twig',
 			[
 				'lists' => $listsRepository->findAll($userId),
 				'linkedLists' => $listsRepository->findLinkedLists($userId),

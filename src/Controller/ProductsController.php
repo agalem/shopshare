@@ -219,7 +219,7 @@ class ProductsController implements ControllerProviderInterface {
 				]
 			);
 
-			//return $app->redirect($app['url_generator']->generate('list_edit', array('id' => $listId)), 301);
+			return $app->redirect($app['url_generator']->generate('list_edit', array('id' => $listId)), 301);
 		}
 
 		return $app['twig']->render(

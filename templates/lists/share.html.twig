@@ -20,7 +20,12 @@
     {{ form_end(form) }}
 </div>
 
+    <a class="btn btn-warning" href="{{ url('list_delete_user', {'id' : editedList.id}) }}">{{ 'label.delete_user'|trans }}</a><br/><br/>
+
+    <a href="{{ url('list_edit', {'id' : editedList.id}) }}">{{ 'label.return'|trans }}</a>
+
     <div class="horizontal-line"></div>
+
 
     {% if sharedUsers is defined and sharedUsers|length %}
         <p>{{ 'label.shared_with'|trans }}:</p>

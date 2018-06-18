@@ -88,3 +88,7 @@ function handlePopover() {
     elem[0].classList.toggle('fa-angle-up');
 
 }
+
+function toggleMenu() {
+    document.getElementById(event.currentTarget.dataset.target).classList.toggle('show');
+}

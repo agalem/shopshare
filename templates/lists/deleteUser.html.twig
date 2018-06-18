@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}
+    Application
+{% endblock %}
+
+{% block main %}
+    <h3 class="h3 text-monospace custom-m-b">{{ 'label.share_list'|trans({'%name%': editedList.name}) }}</h3>
+    <div class="form-group">
+        {{ form_start(form, { method: 'post', action: url('list_delete_user', {'id': editedList.id}) }) }}
+        <div>
+            {{ form_label(form.user_login, 'label.user_login'|trans) }}<br/>
+            <div class="form-input">
+                {{ form_widget(form.user_login) }}
+                {{ form_errors(form.user_login) }}
+            </div>
+        </div>
+        <input type="submit" value="{{ 'action.delete'|trans }}" class="btn btn-warning custom-m-t" />
+        {{ form_end(form) }}
+    </div>
+
+    <a href="{{ url('list_edit', {'id' : editedList.id}) }}">{{ 'label.return'|trans }}</a>
+
+    <div class="horizontal-line"></div>
+
+
+    {% if sharedUsers is defined and sharedUsers|length %}
+        <p>{{ 'label.shared_with'|trans }}:</p>
+        <ol>
+            {% for user in sharedUsers %}
+                <li>{{ user }}</li>
+            {% endfor %}
+        </ol>
+
+    {% else %}
+        <p>{{ 'label.no_shared'|trans }}</p>
+    {% endif %}
+
+{% endblock %}

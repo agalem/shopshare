@@ -24,10 +24,10 @@
                             <span data-name="{{ product.id }}" class="fa fa-angle-down text-info custom-icon-pos"></span>
                         </div>
                         <div class="row-add " data-name="{{ product.id }}">
-                            <span>Added by: </span><span>{{ product.login }}</span><br/>
-                            <span>Added at: </span><span>{{ product.createdAt }}</span><br/>
-                            <span>Last modified: </span><span>{{ product.modifiedAt }}</span><br/>
-                            <span>Message: </span><span>{{ product.message }}</span>
+                            <span>{{ 'label.addedBy'|trans }}: </span><span>{{ product.login }}</span><br/>
+                            <span>{{ 'label.addedAt'|trans }}: </span><span>{{ product.createdAt }}</span><br/>
+                            <span>{{ 'label.lastModified'|trans }}: </span><span>{{ product.modifiedAt }}</span><br/>
+                            <span>{{ 'label.message'|trans }}: </span><span>{{ product.message }}</span>
                         </div>
                     {% endfor %}
                     </tbody>
@@ -54,10 +54,10 @@
                         </div>
                         <div class="row-add " data-name="{{ product.id }}">
 
-                            <span>Added by: </span><span>{{ product.login }}</span><br/>
-                            <span>Added at: </span><span>{{ product.createdAt }}</span><br/>
-                            <span>Last modified: </span><span>{{ product.modifiedAt }}</span><br/>
-                            <span>Message: </span><span>{{ product.message }}</span>
+                            <span>{{ 'label.addedBy'|trans }}: </span><span>{{ product.login }}</span><br/>
+                            <span>{{ 'label.addedAt'|trans }}: </span><span>{{ product.createdAt }}</span><br/>
+                            <span>{{ 'label.lastModified'|trans }}: </span><span>{{ product.modifiedAt }}</span><br/>
+                            <span>{{ 'label.message'|trans }}: </span><span>{{ product.message }}</span>
                         </div>
                     {% endfor %}
                     </tbody>

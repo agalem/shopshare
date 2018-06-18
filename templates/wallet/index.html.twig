@@ -13,8 +13,9 @@
                 <table>
                     {% if forUser is defined and forUser|length %}
                         <tbody>
+                        <h3 class="h6 text-monospace mb-3">{{ 'title.bought_by_you'|trans }}</h3>
                             {% for element in forUser %}
-                                <div onclick="handlePopover();" data-name="row" class="row" id="{{ element.id }}">
+                                <div onclick="handlePopover();" data-name="row" class="row row-wallet" id="{{ element.id }}">
                                     <div data-name="product" class="text-dark text-monospace">{{ element.login }}</div>
                                     <div class="text-success text-monospace text-large pl-4">+{{ element.price * element.quantity }} PLN</div>
                                     <div class="custom-btn_table"><a href="{{ url('payment_delete', {'id': element.id}) }}"><button type="button" class="btn btn-success">{{ 'label.payed'|trans }}</button></a></div>
@@ -22,8 +23,8 @@
                                     <span data-name="{{ element.id }}" class="fa fa-angle-down text-info custom-icon-pos"></span>
                                 </div>
                                 <div class="row-add " data-name="{{ element.id }}">
-                                    <span>Product: </span><span>{{ element.name }}</span><br/>
-                                    <span>Message: </span><span>{{ element.message }}</span>
+                                    <span>{{ 'label.product'|trans }}: </span><span>{{ element.name }}</span><br/>
+                                    <span>{{ 'label.message'|trans }}: </span><span>{{ element.message }}</span>
                                 </div>
                             {% endfor %}
                         </tbody>
@@ -34,16 +35,17 @@
                 <table>
                     {% if byUser is defined and byUser|length %}
                         <tbody>
+                        <h3 class="h6 text-monospace mb-3">{{ 'title.bought_for_you'|trans }}</h3>
                             {% for element in byUser %}
-                                <div onclick="handlePopover();" data-name="row" class="row" id="{{ element.id }}">
+                                <div onclick="handlePopover();" data-name="row" class="row row-wallet" id="{{ element.id }}">
                                     <div data-name="product" class="text-dark text-monospace">{{ element.login }}</div>
                                     <div class="text-danger text-monospace text-large pl-4">-{{ element.price * element.quantity }}PLN</div>
 
                                     <span data-name="{{ element.id }}" class="fa fa-angle-down text-info custom-icon-pos"></span>
                                 </div>
                                 <div class="row-add " data-name="{{ element.id }}">
-                                    <span>Product: </span><span>{{ element.name }}</span><br/>
-                                    <span>Message: </span><span>{{ element.message }}</span>
+                                    <span>{{ 'label.product'|trans }}: </span><span>{{ element.name }}</span><br/>
+                                    <span>{{ 'label.message'|trans }}: </span><span>{{ element.message }}</span>
                                 </div>
                             {% endfor %}
                         </tbody>
@@ -53,16 +55,17 @@
             <table>
                 {% if byUserForUser is defined and byUserForUser|length %}
                     <tbody>
+                    <h3 class="h6 text-monospace mb-3">{{ 'title.bought_by_you_for_you'|trans }}</h3>
                     {% for element in byUserForUser %}
-                        <div onclick="handlePopover();" data-name="row" class="row" id="{{ element.id }}">
+                        <div onclick="handlePopover();" data-name="row" class="row row-wallet" id="{{ element.id }}">
                             <div data-name="product" class="text-dark text-monospace">{{ element.name }}</div>
                             <div class="text-dark text-monospace text-large pl-4">{{ element.price * element.quantity }} PLN</div>
 
                             <span data-name="{{ element.id }}" class="fa fa-angle-down text-info custom-icon-pos"></span>
                         </div>
                         <div class="row-add " data-name="{{ element.id }}">
-                            <span>Product: </span><span>{{ element.name }}</span><br/>
-                            <span>Message: </span><span>{{ element.message }}</span>
+                            <span>{{ 'label.product'|trans }}: </span><span>{{ element.name }}</span><br/>
+                            <span>{{ 'label.message'|trans }}: </span><span>{{ element.message }}</span>
                         </div>
                     {% endfor %}
                     </tbody>

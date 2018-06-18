@@ -28,7 +28,7 @@
     </header>-->
     <div class="main-content">
         <aside class="aside bg-primary">
-            <h1 class="card-title text-light m-lg-2">ShopLista</h1>
+            <a href="{{ url('index_page') }}" class="h1 card-title text-light m-lg-2">ShopLista</a>
 
             {% if  is_granted('ROLE_ADMIN') %}
                 <a href="" title="{{ 'label.add_admin'|trans }}" class="text-light"><li class="list-group-item bg-primary">{{ 'labe.add_admin'|trans }} </li></a>
@@ -110,7 +110,7 @@
                 <a href="{{ url('list_add') }}" title="{{ 'title.add_list'|trans }}" class="text-light"> <span class="fa fa-file text-warning" ></span> {{ 'title.add_list'|trans }}</a>
             </ul>
             <ul class="list-manager">
-                <a href="" title="{{ 'title.manage_account'|trans }}" class="text-light"> <span class="fa fa-user-cog text-warning "></span> {{ 'title.manage_account'|trans }}</a>
+                <a href="{{ url('user_edit_self') }}" title="{{ 'title.manage_account'|trans }}" class="text-light"> <span class="fa fa-user-cog text-warning "></span> {{ 'title.manage_account'|trans }}</a>
             </ul>
             <ul class="list-manager">
                 {% block managePanel %}{% endblock %}

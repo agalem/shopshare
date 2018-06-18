@@ -238,6 +238,157 @@
                 <source>title.manage_account</source>
                 <target>Ustawienia konta</target>
             </trans-unit>
+
+            <trans-unit id="label.share_list">
+                <source>label.share_list</source>
+                <target>Udostępnij listę</target>
+            </trans-unit>
+            <trans-unit id="label.user_login">
+                <source>label.user_login</source>
+                <target>Login użytkownika</target>
+            </trans-unit>
+             <trans-unit id="action.add">
+                 <source>action.add</source>
+                 <target>Dodaj</target>
+             </trans-unit>
+            <trans-unit id="label.delete_user">
+                <source>label.delete_user</source>
+                <target>Usuń użytkownika</target>
+            </trans-unit>
+            <trans-unit id="label.no_shared">
+                <source>label.no_shared</source>
+                <target>Lista nie jest z nikim dzielona</target>
+            </trans-unit>
+            <trans-unit id="label.shared_with">
+                <source>label.shared_with</source>
+                <target>Dzielona z</target>
+            </trans-unit>
+            <trans-unit id="label.share">
+                <source>label.share</source>
+                <target>Udostępnij</target>
+            </trans-unit>
+
+            <trans-unit id="label.edit_account">
+                <source>label.edit_account</source>
+                <target>Edytuj konto</target>
+            </trans-unit>
+            <trans-unit id="label.login">
+                <source>label.login</source>
+                <target>Login</target>
+            </trans-unit>
+            <trans-unit id="label.password">
+                <source>label.password</source>
+                <target>Hasło</target>
+            </trans-unit>
+            <trans-unit id="action.change">
+                <source>action.change</source>
+                <target>Zmień</target>
+            </trans-unit>
+            <trans-unit id="label.delete_account">
+                <source>label.delete_account</source>
+                <target>Usuń konto</target>
+            </trans-unit>
+            <trans-unit id="label.delete_self">
+                <source>label.delete_self</source>
+                <target>Usuń konto</target>
+            </trans-unit>
+
+            <trans-unit id="title.bought_by_you">
+                <source>title.bought_by_you</source>
+                <target>Kupione przez Ciebie</target>
+            </trans-unit>
+            <trans-unit id="title.bought_for_you">
+                <source>title.bought_for_you</source>
+                <target>Musisz oddać</target>
+            </trans-unit>
+            <trans-unit id="title.bought_by_you_for_you">
+                <source>title.bought_by_you_for_you</source>
+                <target>Kupione samemu sobie</target>
+            </trans-unit>
+
+            <trans-unit id="label.product">
+                <source>label.product</source>
+                <target>Produkt</target>
+            </trans-unit>
+            <trans-unit id="label.addedAt">
+                <source>label.addedAt</source>
+                <target>Dodano</target>
+             </trans-unit>
+            <trans-unit id="label.addedBy">
+                <source>label.addedBy</source>
+                <target>Dodał/a</target>
+            </trans-unit>
+            <trans-unit id="label.lastModified">
+                <source>label.lastModified</source>
+                <target>Ostatnio zmieniane</target>
+            </trans-unit>
+
+
+            <trans-unit id="message.password_changed">
+                <source>message.password_changed</source>
+                <target>Hasło zmienione</target>
+            </trans-unit>
+            <trans-unit id="message.user_successfully_deleted">
+                <source>message.user_successfully_deleted</source>
+                <target>Użytkownik został usunięty</target>
+            </trans-unit>
+            <trans-unit id="message.username_exists">
+                <source>message.username_exists</source>
+                <target>Podany login już istnieje</target>
+            </trans-unit>
+            <trans-unit id="message.admin_created">
+                <source>message.admin_created</source>
+                <target>Utworzono nowe konto administratora</target>
+            </trans-unit>
+            <trans-unit id="message.list_exist">
+                <source>message.list_exist</source>
+                <target>Lista o podanej nazwie już istnieje</target>
+            </trans-unit>
+            <trans-unit id="message.connection_deleted">
+                <source>message.connection_deleted</source>
+                <target>Usunięto połączenie</target>
+            </trans-unit>
+            <trans-unit id="message.user_not_found">
+                <source>message.user_not_found</source>
+                <target>Nie znaleziono podanego użytkownika</target>
+            </trans-unit>
+            <trans-unit id="message.cannot_share_yourself">
+                <source>message.cannot_share_yourself</source>
+                <target>Wybrano samego siebie</target>
+            </trans-unit>
+            <trans-unit id="message.cannot_add_admin">
+                <source>message.cannot_add_admin</source>
+                <target>Nie można dodać administratora do listy</target>
+            </trans-unit>
+            <trans-unit id="message.already_on_list">
+                <source>message.already_on_list</source>
+                <target>Użytkownik jest już przypisany do listy</target>
+            </trans-unit>
+            <trans-unit id="message.user_successfully_added">
+                <source>message.user_successfully_added</source>
+                <target>Dodano użytownika</target>
+            </trans-unit>
+            <trans-unit id="message.user_updated">
+                <source>message.user_updated</source>
+                <target>Zaktualizowano dane użytkownika</target>
+            </trans-unit>
+            <trans-unit id="action.login">
+                <source>action.login</source>
+                <target>Zaloguj się</target>
+            </trans-unit>
+
+            <trans-unit id="title.auth_create">
+                <source>title.auth_create</source>
+                <target>Utwórz konto</target>
+            </trans-unit>
+            <trans-unit id="title.auth_login">
+                <source>title.auth_login</source>
+                <target>Zaloguj się</target>
+            </trans-unit>
+            <trans-unit id="action.create">
+                <source>action.create</source>
+                <target>Utwórz</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/index.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+    <title>ShopLista -  o serwisie</title>
+
+
+</head>
+<body>
+
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="{{ url('index_page') }}">ShopLista</a>
+        <button onclick="toggleMenu(event);" class="navbar-toggler" type="button" data-toggle="collapse" data-target="navbarCollapse"  aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse " id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+
+            </ul>
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                <form class="form-inline mt-2 mt-md-0">
+                    <a href="{{ url('auth_logout') }}" class="btn btn-warning my-2 my-sm-0 mr-4 text-dark" >Wyloguj się</a>
+                </form>
+            {% else %}
+                <form class="form-inline mt-2 mt-md-0">
+                    <a href="{{ url('auth_create') }}" class="btn btn-primary my-2 my-sm-0 mr-4 text-light" >Zarejestruj się</a>
+                    <a href="{{ url('auth_login') }}" class="btn btn-success my-2 my-sm-0 text-light" >Zaloguj się</a>
+                </form>
+            {% endif %}
+        </div>
+    </nav>
+</header>
+
+<main role="main">
+
+
+    <hr class="featurette-divider">
+
+    <div class="row featurette ml-3 mr-3">
+        <p class="m-3">Autorem niniejszego serwisu jest Agnieszka Lempaszek.
+            Serwis ten stanowi integralną część pracy licencjackiej (kierunek: Elektroniczne Przetwarzanie Informacji), przygotowanej pod kierunkiem prof. ASP, dr hab. Grzegorza Bilińskiego na Wydziale Zarządzania i Komunikacji Społecznej Uniwersytetu Jagiellońskiego.
+        </p>
+    </div>
+
+    <hr class="featurette-divider">
+
+    <a class="text-dark text-primary text-monospace ml-4" href="{{ url('index_page') }}" style="font-size: 1.3rem;">{{ 'label.return'|trans }}</a>
+
+</main>
+</body>
+</html>

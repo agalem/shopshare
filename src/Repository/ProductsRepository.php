@@ -203,7 +203,7 @@ class ProductsRepository {
 
 
 	public function buy($product, $user) {
-		$this->db->beginTransaction();
+
 
 		$previousState = $this->findOneById($product['id']);
 		$finalQuantity = $previousState['quantity'];
@@ -212,7 +212,6 @@ class ProductsRepository {
 		$previousMessage = $previousState['message'];
 
 
-		try {
 			$currentDateTime = new \DateTime();
 			$newProduct['modifiedAt'] = $currentDateTime->format('Y-m-d H:i:s');
 			$newProduct['currentQuantity'] = $product['quantity'] + $previousQuantity;
@@ -248,11 +247,7 @@ class ProductsRepository {
 				$product['createdAt'] = $currentDateTime->format('Y-m-d H:i:s');
 				$this->db->insert('products', $product);
 			}
-			$this->db->commit();
-		} catch (DBALException $e) {
-			$this->db->rollBack();
-			return [];
-		}
+
 	}
 
 

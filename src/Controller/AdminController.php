@@ -113,6 +113,7 @@ class AdminController implements  ControllerProviderInterface {
 		$userRepository = new UserRepository($app['db']);
 
 		$user = $userRepository->findUserById($id);
+		$userId = $id;
 
 		if(!$user) {
 			$app['session']->getFlashBag()->add(

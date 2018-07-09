@@ -3,7 +3,7 @@
 namespace Form;
 
 use PHP_CodeSniffer\Generators\Text;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -12,7 +12,7 @@ class ChangePasswordType extends AbstractType {
 	public function buildForm(FormBuilderInterface $builder, array $options) {
 		$builder->add(
 			'password',
-			TextType::class,
+			PasswordType::class,
 			[
 				'label' => 'label.new_password',
 				'required' => true,

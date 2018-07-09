@@ -144,6 +144,23 @@ class ProductsController implements ControllerProviderInterface {
 
 		if($form->isSubmitted() && $form->isValid()){
 
+			$data = $form->getData();
+
+
+			if($data['value'] == null || $data['quantity'] == null) {
+
+				$app['session']->getFlashBag()->add(
+					'messages',
+					[
+						'type' => 'danger',
+						'message' => 'Podaj cenę i ilość',
+					]
+				);
+
+				return $app->redirect($app['url_generator']->generate('product_buy', array('id' => $id)), 301);
+			}
+
+
 			$productsRepository->buy($form->getData(), $userId);
 
 

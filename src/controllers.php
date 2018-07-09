@@ -10,6 +10,10 @@ $app->get('/', function () use ($app) {
 	return $app['twig']->render('index.html.twig');
 })->bind('index_page');
 
+$app->get('/about', function() use ($app) {
+	return $app['twig']->render('about.html.twig');
+})->bind('about_page');
+
 $app->mount('/lists', new ListsController());
 $app->mount('/product', new \Controller\ProductsController());
 $app->mount('/auth', new \Controller\AuthController());

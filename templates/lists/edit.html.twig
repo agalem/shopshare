@@ -1,10 +1,6 @@
 {% extends 'base.html.twig' %}
 
 
-{% block title %}
-    Application
-{% endblock %}
-
 {% block main %}
     <h3 class="modal-title text-monospace custom-m-b">{{ 'label.edit_list'|trans({'%name%': editedList.name}) }}</h3>
 
@@ -27,16 +23,16 @@
 
 
     <a href="{{ url('product_add', {'id' : editedList.id}) }}"><button role="button" class="btn btn-success custom-m-b">{{ 'label.add_element'|trans }}</button></a>
-    <table class="table table-hover">
+    <table class="table table-hover table-width">
         {% if userProducts is defined and userProducts|length %}
             <caption>{{ 'table.caption'|trans({'%name%': editedList.name}) }}</caption>
             <tbody>
             <p>{{ 'text.user_products'|trans }}</p>
             {% for product in userProducts %}
 
-                <tr>
+                <tr class="product-row">
                     <td class="custom-narrow"><span class="badge badge-primary badge-pill">{{ product.quantity }}</span></th>
-                    <th scope="row" class="text-uppercase {% if product.isBought == true %} custom-bought {% endif %}">{{ product.name }}</th>
+                    <th scope="row" class="custom-productName {% if product.isBought == true %} custom-bought {% endif %}">{{ product.name }}</th>
                     <td class="custom-pos_rel"><a href="{{ url('product_edit', {'id' : product.id}) }}" class="custom-btn_table custom-m-r"><button role="button" class="btn btn-warning">{{ 'label.edit'|trans }}</button></a></td>
                     <td class="custom-pos_rel"><a href="{{ url('product_delete', {'id' : product.id }) }}" class="custom-btn_table custom-btn_table-danger"><button type="button" class="btn btn-danger">{{ 'action.delete'|trans }}</button></a></td>
                 </tr>

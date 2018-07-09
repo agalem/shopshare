@@ -17,21 +17,21 @@
     <div class="form-group form-signin">
         <h1 class="h3 mb-3 font-weight-normal">{{ 'title.auth_login'|trans }}</h1>
         {{ form_start(form, { method: 'post', action: path('auth_login_check') }) }}
-        <div class="form-group row">
-            <span class="col-sm-2 col-form-label">{{ form_label(form.login, 'label.login'|trans) }}</span>
+        <div class="row row-auth">
+            <p class="col-sm-4 col-form-label">{{ form_label(form.login, 'label.login'|trans) }}</p>
             <div class="col-sm-8">
                  {{ form_widget(form.login) }}
                 {{ form_errors(form.login) }}
             </div>
         </div>
-        <div class="form-group row">
-            <span class="col-sm-2 col-form-label">{{ form_label(form.password, 'label.password'|trans) }}</span>
+        <div class="row row-auth">
+            <p class="col-sm-4 col-form-label">{{ form_label(form.password, 'label.password'|trans) }}</p>
             <div class="col-sm-8">
                 {{ form_widget(form.password) }}
                 {{ form_errors(form.password) }}
             </div>
         </div>
-        <input type="submit" value="{{ 'action.login'|trans }}" class="btn btn-md btn-primary mb-2"/>
+        <input type="submit" value="{{ 'action.login'|trans }}" class="btn btn-md btn-primary mt-2 "/>
         {{ form_end(form) }}
     </div>
 

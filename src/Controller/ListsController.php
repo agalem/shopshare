@@ -115,36 +115,20 @@ class ListsController implements ControllerProviderInterface {
 
 		}
 
-		$currentSpendigs = $listsRepository->getCurrentSpendings($id);
 		$activeList = $listsRepository->findOneById($id);
 		$plannedSpendings = $activeList['maxCost'];
 
-		if($plannedSpendings == null) {
-			$spendPercent = 0;
-		} else {
-			$spendPercent = round($currentSpendigs / $plannedSpendings * 100);
-		}
-
-		if($spendPercent < 50) {
-			$progressBarClass = 'bg-success text-light';
-		} else if ($spendPercent >= 50 && $spendPercent < 80) {
-			$progressBarClass = 'bg-warning text-dark';
-		} else {
-			$progressBarClass = 'bg-danger text-light';
-		}
 
 
 		return $app['twig']->render(
 			'lists/view.html.twig',
 			[
-				'currentSpendings' => $listsRepository->getCurrentSpendings($id),
+
 				'lists' => $listsRepository->findAll($userId),
 				'activeList' => $listsRepository->findOneById($id),
 				'userProducts' => $listsRepository->findUserProducts($id, $userId),//TODO
 				'otherProducts' => $listsRepository->findOtherProducts($id, $userId),
 				'plannedSpendings' => $plannedSpendings,
-				'spendPercent' => $spendPercent,
-				'progressBarClass' => $progressBarClass,
 				'linkedLists' => $listsRepository->findLinkedLists($userId),
 				'isLinked' => $isLinked,
 				'listOwner' => $listsRepository->getListOwner($id),

@@ -8,6 +8,7 @@
 
 namespace Controller;
 
+use Form\ChangePasswordType;
 use Form\LoginType;
 use Silex\Application;
 use Silex\Api\ControllerProviderInterface;
@@ -41,15 +42,13 @@ class UserController implements ControllerProviderInterface {
 		$username = $this->getUsername($app);
 		$userId = $this->getUserId($app, $username);
 
-		$form = $app['form.factory']->createBuilder(LoginType::class)->getForm();
+		$form = $app['form.factory']->createBuilder(ChangePasswordType::class)->getForm();
 		$form->handleRequest($request);
 
 		if($form->isSubmitted() && $form->isValid()){
 
 			$data = $form->getData();
-			$newUser['login'] = $data['login'];
 			$newUser['password'] = $app['security.encoder.bcrypt']->encodePassword($data['password'], '');
-			$newUser['role_id'] = "2";
 
 			$userRepository->updateUserData($userId, $newUser);
 
@@ -61,7 +60,7 @@ class UserController implements ControllerProviderInterface {
 				]
 			);
 
-			return $app->redirect($app['url_generator'])->generate('user_edit_self');
+			return $app->redirect($app['url_generator']->generate('user_edit_self'), 301);
 		}
 
 		return $app['twig']->render(

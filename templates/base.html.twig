@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>{% block title %}Default title{% endblock %}</title>
+    <title>{% block title %}ShopLista{% endblock %}</title>
     {% block stylesheets %}
         <!-- Bootstrap -->
         <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
@@ -26,20 +26,27 @@
     <!--<header class="header">
         <button class="btn btn-outline-primary my-2 my-sm-0" >Sign Out</button>
     </header>-->
+    <button onclick="toggleAppMenu();" class="navbar-toggler custom-toggler bg-primary" type="button" data-toggle="collapse" data-target="appNav"  aria-label="Toggle navigation">
+        <span class="fa fa-bars text-light  p-2" style="font-size: 1.2rem;"></span>
+    </button>
     <div class="main-content">
-        <aside class="aside bg-primary">
+
+        <aside class="aside bg-primary menu-display" id="appNav">
             <a href="{{ url('index_page') }}" class="h1 card-title text-light m-lg-2">ShopLista</a>
 
             {% if  is_granted('ROLE_ADMIN') %}
-                <a href="" title="{{ 'label.add_admin'|trans }}" class="text-light"><li class="list-group-item bg-primary">{{ 'labe.add_admin'|trans }} </li></a>
+
+                <a href="{{ url('admin_add') }}" title="{{ 'label.add_admin'|trans }}" class="text-light"><li class="list-group-item bg-primary">{{ 'labe.add_admin'|trans }} </li></a>
+
             {% elseif is_granted('IS_AUTHENTICATED_FULLY') %}
+
             <div class="tabset bg-primary">
-                <a onclick="handleActiveTab();" id="tab1" class="tab active">{{ 'label.yours_lists'|trans }} <span class="fas fa-long-arrow-alt-down"></span></a>
-                <a onclick="handleActiveTab();" id="tab2" class="tab inactive">{{ 'label.linked_lists'|trans }} <span class="fas fa-long-arrow-alt-down"></span></a>
+                <a onclick="handleActiveFirstTab();" id="tab1" class="tab active">{{ 'label.yours_lists'|trans }} <span class="fas fa-long-arrow-alt-down"></span></a>
+                <a onclick="handleActiveSecondTab();" id="tab2" class="tab inactive">{{ 'label.linked_lists'|trans }} <span class="fas fa-long-arrow-alt-down"></span></a>
             </div>
 
             <div class="list-container userLists-container" data-name="tab1">
-                <input onchange="searchList();" id="search_user" class="form-control d-inline" type="search" placeholder="{{ 'label.search_list'|trans }}">
+                <input onchange="searchListUsers();" id="search_user" class="form-control d-inline" type="search" placeholder="{{ 'label.search_list'|trans }}">
                 <ul id="list_user" class="list-group list-margin" >
             {% if lists is defined and lists|length %}
 
@@ -56,7 +63,7 @@
             </div>
 
             <div class="list-container userLinked-container d-none" data-name="tab2">
-                <input onchange="searchList();" id="search_linked" class="form-control" type="search" placeholder="{{ 'label.search_list'|trans }}">
+                <input onchange="searchListLinked();" id="search_linked" class="form-control" type="search" placeholder="{{ 'label.search_list'|trans }}">
                 <ul id="list_linked" class="list-group list-margin" >
             {% if linkedLists is defined and linkedLists|length %}
 
@@ -81,10 +88,21 @@
                         <li class="logout list-group-item bg-primary">{{ 'auth.logout.label'|trans }} <span class="fas fa-sign-out-alt"></span></li>
                     </a>
                 {% elseif is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <div class="media-panel">
+                        <ul class="list-manager">
+                            <a href="{{ url('lists_manager') }}" title="{{ 'title.manage_lists'|trans }}" class="text-light"><span class="fa fa-cog text-warning"></span> {{ 'title.manage_lists'|trans }} </a>
+                            <a href="{{ url('list_add') }}" title="{{ 'title.add_list'|trans }}" class="text-light"> <span class="fa fa-file text-warning" ></span> {{ 'title.add_list'|trans }}</a>
+                        </ul>
+                        <ul class="list-manager">
+                            <a href="{{ url('user_edit_self') }}" title="{{ 'title.manage_account'|trans }}" class="text-light"> <span class="fa fa-user-cog text-warning "></span> {{ 'title.manage_account'|trans }}</a>
+                        </ul>
+                    </div>
+
                     <a href="{{ url('user_wallet') }}" title="{{ 'title.wallet'|trans }}" class="lists-wallet lists text-light"><li class="list-group-item bg-primary">{{ 'title.wallet'|trans }} <span class="fa fa-wallet"></span></li></a>
                     <a href="{{ url('auth_logout') }}" title="{{ 'auth.logout.label'|trans }}" class="text-light">
                         <li class="logout list-group-item bg-primary">{{ 'auth.logout.label'|trans }} <span class="fas fa-sign-out-alt"></span></li>
                     </a>
+
                 {% else %}
                     <a href="{{ url('auth_login') }}" title="{{ 'auth.login.label'|trans }}" class="text-light">
                         <li class="list-group-item bg-primary">{{ 'auth.login.label'|trans }}</li>
@@ -96,7 +114,7 @@
                 {% endif %}
             </ul>
         </aside>
-        <main class="lists-content">
+        <main class="lists-content" id="appContent">
             {% block main %}{% endblock %}
         </main>
 

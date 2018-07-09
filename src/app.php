@@ -39,15 +39,16 @@ $app->register(new DoctrineServiceProvider(),
 		'db.options' => [
 			'driver' => 'pdo_mysql',
 			'host' => 'localhost',
-			'dbname' => 'shop_lista_db',
-			'user' => 'shop_lista_admin',
-			'password' => 'HEHtSPzejPwexe',
+			'dbname' => '15_lempaszek',
+			'user' => '15_lempaszek',
+			'password' => 'tyna2006',
 			'charset' => 'utf8',
 			'driverOptions' => [
 				1002 => 'SET NAMES utf8',
 			],
 		],
 	]);
+
 
 $app->register(new FormServiceProvider());
 $app->register(new ValidatorServiceProvider());
@@ -84,13 +85,17 @@ $app->register(
 		'security.access_rules' => [
 			['^/auth.+$', 'IS_AUTHENTICATED_ANONYMOUSLY'],
 			['^/admin', 'ROLE_ADMIN'],
-			['^/.+$', 'ROLE_USER']
+			['^/lists.+$', 'ROLE_USER'],
+			['^/product.+$', 'ROLE_USER'],
+			['^/wallet.+$', 'ROLE_USER'],
+			['^/user.+$', 'ROLE_USER']
 		],
 		'security.role_hierarchy' => [
 			'ROLE_ADMIN' => ['ROLE_USER'],
 		],
 	]
 );
+
 
 
 

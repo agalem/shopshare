@@ -1,9 +1,6 @@
 {% extends "base.html.twig" %}
 
 
-{% block title %}
-    Application
-{% endblock %}
 
 {% block main %}
     <h4 class="modal-title text-monospace mb-3">{{ activeList.name }} {% if sharedUsers is defined and sharedUsers|length %}<span class="fa fa-users"></span> {% endif %}</h4>
@@ -15,7 +12,7 @@
                     <!--<caption>{{ 'title.manage_lists'|trans }}</caption>-->
                     <tbody>
                     {% for product in userProducts %}
-                        <div onclick="handlePopover();" data-name="row" class="row" id="{{ product.id }}">
+                        <div onclick="handlePopover({{ product.id }});" id="{{ product.id }}" data-name="row" class="row">
                             <div  class="custom-narrow"> <span class="badge badge-primary badge-pill">{{ product.quantity - product.currentQuantity }}</span><span> {% if product.isItem == true %} {{ 'label.item'|trans }} {% else %} {{ 'label.weight'|trans }} {% endif %}</span></div>
                             <div data-name="product" class="text-dark {% if product.quantity - product.currentQuantity <= 0  %} custom-bought {% endif %}">{{ product.name }}</div>
                             {% if product.quantity - product.currentQuantity > 0 %}
@@ -23,7 +20,7 @@
                             {% endif %}
                             <span data-name="{{ product.id }}" class="fa fa-angle-down text-info custom-icon-pos"></span>
                         </div>
-                        <div class="row-add " data-name="{{ product.id }}">
+                        <div class="row-add " data-name="{{ product.id }}" id="product1">
                             <span>{{ 'label.addedBy'|trans }}: </span><span>{{ product.login }}</span><br/>
                             <span>{{ 'label.addedAt'|trans }}: </span><span>{{ product.createdAt }}</span><br/>
                             <span>{{ 'label.lastModified'|trans }}: </span><span>{{ product.modifiedAt }}</span><br/>
@@ -44,7 +41,7 @@
                     <!--<caption>{{ 'title.manage_lists'|trans }}</caption>-->
                     <tbody>
                     {% for product in otherProducts %}
-                        <div onclick="handlePopover();" data-name="row" class="row" id="{{ product.id }}">
+                        <div onclick="handlePopover({{ product.id }});" data-name="row" class="row" id="{{ product.id }}">
                             <div  class="custom-narrow"><span class="fa fa-user mr-1"></span> <span class="badge badge-primary badge-pill">{{ product.quantity - product.currentQuantity }}</span><span> {% if product.isItem == true %} {{ 'label.item'|trans }} {% else %} {{ 'label.weight'|trans }} {% endif %}</span></div>
                             <div data-name="product" class="text-dark  {% if product.quantity - product.currentQuantity <= 0  %} custom-bought {% endif %}">{{ product.name }}</div>
                             {% if product.quantity - product.currentQuantity > 0 %}

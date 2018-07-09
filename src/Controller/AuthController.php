@@ -67,9 +67,8 @@ class AuthController implements ControllerProviderInterface
 			$newUser = $form->getData();
 
 			$ifExists = $usersRepository->getUserByLogin($newUser['login']);
-			$ifExists = is_array($ifExists);
 
-			if ($ifExists == true) {
+			if ($ifExists != []) {
 
 				$app['session']->getFlashBag()->add(
 					'messages',

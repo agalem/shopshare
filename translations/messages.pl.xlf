@@ -389,6 +389,32 @@
                 <source>action.create</source>
                 <target>Utwórz</target>
             </trans-unit>
+
+
+            <trans-unit id="labe.add_admin">
+                <source>labe.add_admin</source>
+                <target>Utwórz konto administratora</target>
+            </trans-unit>
+            <trans-unit id="label.delete">
+                <source>label.delete</source>
+                <target>Usuń</target>
+            </trans-unit>
+            <trans-unit id="label.edit_user">
+                <source>label.edit_user</source>
+                <target>Edytuj użytkownika</target>
+            </trans-unit>
+            <trans-unit id="label.user_lists">
+                <source>label.user_lists</source>
+                <target>Listy użytkownika</target>
+            </trans-unit>
+            <trans-unit id="title.admins">
+                <source>title.admins</source>
+                <target>Administratorzy</target>
+            </trans-unit>
+            <trans-unit id="title.manage_users">
+                <source>title.manage_users</source>
+                <target>Zarządzaj użytkownikami</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
